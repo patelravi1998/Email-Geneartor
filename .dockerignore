@@ -1,0 +1,6 @@
+cat .gitignore 
+/node_modules
+.env
+/build
+/dist
+/logs
