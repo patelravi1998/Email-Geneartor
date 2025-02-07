@@ -5,11 +5,12 @@
   "main": "index.ts",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && npm run copy-assets",
     "dev": "ts-node-dev index.ts",
     "migrate": "ts-node src/migrations/index.ts",
     "seed": "ts-node src/seeders/index.ts",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "copy-assets": "copyfiles -u 1 \"src/**/*.ttf\" \"dist/src/\""
   },
   "keywords": [],
   "author": "channelchampions",
@@ -61,6 +62,7 @@
     "@types/node": "^20.14.10",
     "@types/sequelize": "^4.28.20",
     "@types/uuid": "^10.0.0",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4"
