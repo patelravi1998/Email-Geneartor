@@ -3,22 +3,11 @@
 import { Ceritificate } from "../entities";
 import { ApiError } from "../middleware/errors";
 // import logger from '../utils/logger';
-import { getRepository } from "typeorm";
-import {
-  UpdateUserDetailsDTO,
-  changeUpiStatus,
-  quizDtos,
-} from "../dtos/user/UserDTO";
-import { isEmpty } from "lodash";
-import { sendSMS, generateSessionId } from "../utils/utils";
+
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
-import puppeteer from "puppeteer";
 import PublicService from "../services/PublicService";
-import { CloudWatchLogger } from "../utils/newLogger";
-import sharp from "sharp";
-import axios from "axios";
 
 export class UserService {
   async generateUserCertificate(

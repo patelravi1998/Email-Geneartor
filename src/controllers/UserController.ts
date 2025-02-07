@@ -3,19 +3,7 @@
 import logger from "../utils/logger"; // Adjust path as needed
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
-import {
-  userDetailsSchema,
-  sfaIdSchema,
-  upiDetailsSchema,
-  quizSchema,
-} from "../validations/userDTO"; // Import UserResponseDTO
 import { ApiError } from "../middleware/errors";
-import { includes, isEmpty } from "lodash";
-import { sendSMS } from "../utils/utils";
-import { changeUpiStatus } from "../dtos/user/UserDTO";
-import formidable from "formidable";
-import fs from "node:fs";
-import PublicService from "../services/PublicService";
 
 export class UserController {
   async genearteCertificate(
