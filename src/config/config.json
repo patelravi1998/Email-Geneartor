@@ -1,0 +1,23 @@
+{
+  "DEVELOPMENT": {
+    "username": "gpi_Punjab_dev",
+    "password": "srAamB7KaH0YPG5OXUQEHBXyD",
+    "database": "gpi_Punjab_dev",
+    "host": "devdatabase.cg6cziyuwhho.ap-south-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  },
+  "LOCAL": {
+    "username": "root",
+    "password": null,
+    "database": "parker",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "PRODUCTION": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
