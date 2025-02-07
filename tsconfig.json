@@ -1,7 +1,6 @@
 // tsconfig.json
 {
   "compilerOptions": {
-   
     // "paths": {
     //   "*": ["*"]
     // },
@@ -15,10 +14,10 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-   "typeRoots": ["./src/types","./node_modules/@types"],
-    "baseUrl": "./",
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "baseUrl": "./"
     // "typeRoots": [ "@types" ]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/**/*.d.ts", "index.ts"],
   "exclude": ["node_modules"]
 }

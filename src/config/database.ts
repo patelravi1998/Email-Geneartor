@@ -67,7 +67,7 @@ const connectDB = async (options?: { journeyId?: string }) => {
       database: databaseConfig.database,
       // entities: entities, // Add all your entities here
       entities: [...Object.values(entities)],
-      synchronize: true, // Use synchronize: true only in development, to auto-create database schema
+      synchronize: false, // Use synchronize: true only in development, to auto-create database schema
       // timezone: 'Asia/Kolkata', // Adjust timezone as per your application needs
       logging: true,
       extra: {
