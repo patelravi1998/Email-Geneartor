@@ -7,34 +7,34 @@ import { ApiError } from './errors';
 
 // Helmet middleware configuration
 const helmetMiddleware = helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
-        styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
-        imgSrc: ["'self'", 'data:'],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
-      },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+      imgSrc: ["'self'", 'data:'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
-    frameguard: {
-      action: 'deny',
-    },
-    referrerPolicy: {
-      policy: 'same-origin',
-    },
-    hidePoweredBy: true,
-    hsts: {
-      maxAge: 31536000, // Must be at least 1 year to be approved by browsers
-      includeSubDomains: true, // Must be enabled to be approved by browsers
-      preload: true,
-    },
-    ieNoOpen: true, // X-Download-Options for IE8+
-    noSniff: true, // X-Content-Type-Options nosniff
-    permittedCrossDomainPolicies: true, // X-Permitted-Cross-Domain-Policies
-    xssFilter: true, // X-XSS-Protection
-  });
+  },
+  frameguard: {
+    action: 'deny',
+  },
+  referrerPolicy: {
+    policy: 'same-origin',
+  },
+  hidePoweredBy: true,
+  hsts: {
+    maxAge: 31536000, // Must be at least 1 year to be approved by browsers
+    includeSubDomains: true, // Must be enabled to be approved by browsers
+    preload: true,
+  },
+  ieNoOpen: true, // X-Download-Options for IE8+
+  noSniff: true, // X-Content-Type-Options nosniff
+  permittedCrossDomainPolicies: true, // X-Permitted-Cross-Domain-Policies
+  xssFilter: true, // X-XSS-Protection
+});
 
 // CORS middleware configuration
 const corsOptions = {
@@ -52,7 +52,7 @@ const limiter = rateLimit({
   standardHeaders: false, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req, res, next) => {
-    throw new ApiError(429,429,"Limit Reached, Spamming , You have tried multiple times.")
+    throw new ApiError(429, 429, "Limit Reached, Spamming , You have tried multiple times.")
   },
 });
 

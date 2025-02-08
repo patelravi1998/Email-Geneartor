@@ -5,12 +5,6 @@ import logger from '../utils/logger';
 import { ApiError } from './errors';
 dotenv.config();
 
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: JwtPayload;
-    }
-}
-
 const authMiddleware: RequestHandler = async (req, res, next) => {
     try {
         const bearerHeader = req.headers['authorization'];
@@ -22,13 +16,13 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
             console.log(`>>>>user${JSON.stringify(req.user)}`)
             next();
         } else {
-            throw new ApiError(401,401, "Unauthorized access");
+            throw new ApiError(401, 401, "Unauthorized access");
         }
     } catch (error) {
         if (error instanceof TokenExpiredError) {
-            next(new ApiError(401,401, "Token has expired"));
+            next(new ApiError(401, 401, "Token has expired"));
         } else if (error instanceof jwt.JsonWebTokenError) {
-            next(new ApiError(401,401, "Invalid token"));
+            next(new ApiError(401, 401, "Invalid token"));
         } else {
             next(error);
         }

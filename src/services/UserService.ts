@@ -131,7 +131,7 @@ export class UserService {
           const out = fs.createWriteStream(outputPath);
           const stream = canvas.createPNGStream();
           stream.pipe(out);
-          out.on("finish", resolve);
+          out.on("finish", () => resolve);
           out.on("error", reject);
         });
 
