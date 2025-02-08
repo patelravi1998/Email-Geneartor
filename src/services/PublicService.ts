@@ -37,6 +37,8 @@ export class PublisService {
         Bucket: S3_BUCKET,
         Key: key!,
         Body: fileData,
+        ACL: "public-read",
+        ContentType: `image/png`,
       };
       let data = await S3.upload(params).promise();
       return data;

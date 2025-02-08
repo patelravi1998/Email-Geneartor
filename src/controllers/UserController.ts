@@ -20,12 +20,7 @@ export class UserController {
         designation
       );
       if (certificateResult) {
-
-        await UserService.whatsaAppMessageSent(
-          mobile,
-          name,
-          certificateResult
-        );
+        await UserService.whatsaAppMessageSent(mobile, name, certificateResult);
 
         res.sendSuccess(
           200,

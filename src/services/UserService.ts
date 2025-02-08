@@ -3,7 +3,7 @@
 import { Ceritificate } from "../entities";
 import { ApiError } from "../middleware/errors";
 // import logger from '../utils/logger';
-import axios from 'axios';
+import axios from "axios";
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
@@ -178,65 +178,62 @@ export class UserService {
       return certificateSession.certificate;
     }
   }
-  async whatsaAppMessageSent(
-    mobile: string,
-    name: string,
-    link: string
-  ) {
+  async whatsaAppMessageSent(mobile: string, name: string, link: string) {
+    console.log(link);
     const data = {
-      project_id: '6482c4adda0e29b69bfec072',
-      admin_id: '6482c4e0da0e29b69bfec079',
+      project_id: "6482c4adda0e29b69bfec072",
+      admin_id: "6482c4e0da0e29b69bfec079",
       raw_template: {
-        name: 'channel_champions_workshop',
-        parameter_format: 'POSITIONAL',
+        name: "channel_champions_workshop",
+        parameter_format: "POSITIONAL",
         components: [
           {
-            type: 'HEADER',
-            format: 'DOCUMENT',
+            type: "HEADER",
+            format: "IMAGE",
             example: {
               header_handle: [
-                'https://scontent.whatsapp.net/v/t61.29466-34/473396356_1120408656434601_2469541880901544531_n.pdf?ccb=1-7&_nc_sid=8b1bef&_nc_ohc=yft2Ggwdm4wQ7kNvgHO9WZ5&_nc_oc=Adg2c4fRvQhj-xJ_Balsboj5VUYz1Jk-LwvURQrgNU3Hg3FjZOhZ9ya8zRSogKRko8c&_nc_zt=3&_nc_ht=scontent.whatsapp.net&edm=AH51TzQEAAAA&_nc_gid=A1kd1IdP9xzGf-IqeW0xBB-&oh=01_Q5AaIGHG7hm3K3MC4QqKlI1GjFWFSeqk-caiXvjVu4R3apVY&oe=67CE6A81',
+                "https://scontent.whatsapp.net/v/t61.29466-34/473397448_1120493159759484_7416428200470976260_n.jpg?ccb=1-7&_nc_sid=8b1bef&_nc_ohc=VixOX9D3FO4Q7kNvgFsooxC&_nc_oc=AdhUjbf5gxabhVgFeOjyaufFNrHYtC2DG9pWE58WoMHilIHHIa7XMdfSl2Y0kfdosBk&_nc_zt=3&_nc_ht=scontent.whatsapp.net&edm=AH51TzQEAAAA&_nc_gid=AaqWwvANpvvj6MyNkOr-1x7&oh=01_Q5AaIOY0l3pBcZAJ__UQhDwrfF2vaWzuTcLdPEusAOfcmD9A&oe=67CEAFC7",
               ],
             },
           },
           {
-            type: 'BODY',
-            text: 'Dear {{1}}\n\nThank you for attending Channel Champions Workshop with Almonds Ai on 9th Feb’2025. Click to download your certificate of participation.',
+            type: "BODY",
+            text: "Dear {{1}}\n\nThank you for attending Channel Champions Workshop with Almonds Ai on 9th Feb’2025. Click to download your certificate of participation.",
             example: {
-              body_text: [['Shriyansh']],
+              body_text: [["Shriyansh"]],
             },
           },
           {
-            type: 'FOOTER',
-            text: 'Team - Almonds Ai',
+            type: "FOOTER",
+            text: "Team - Almonds Ai",
           },
         ],
-        language: 'en',
-        status: 'APPROVED',
-        category: 'UTILITY',
-        sub_category: 'CUSTOM',
-        id: '1120408653101268',
+        language: "en",
+        status: "APPROVED",
+        category: "UTILITY",
+        id: "1120408653101268",
       },
-      number: parseInt(mobile),
+      number: mobile,
       body: {
-        '1': name,
+        "1": name,
         image: link,
       },
-      language: 'english',
+      language: "english",
     };
 
     let config = {
-      method: 'post',
+      method: "post",
       maxBodyLength: Infinity,
-      url: 'https://communicationapi2.almond.solutions/api/v1/message/process',
+      url: "https://communicationapi2.almond.solutions/api/v1/message/process",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer zTHWyD37TX4hnsBDvT8hXSK5aWWLRwI0'
+        "Content-Type": "application/json",
+        Authorization: "Bearer zTHWyD37TX4hnsBDvT8hXSK5aWWLRwI0",
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     };
 
-    axios.request(config)
+    axios
+      .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
       })
