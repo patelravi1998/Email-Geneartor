@@ -1,5 +1,5 @@
-# Use a Node.js image as the base
-FROM node:18-alpine
+# Stage 1: Build stage
+FROM node:18-alpine AS builder
 
 # Install required dependencies for node-canvas
 RUN apk add --no-cache \
@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     pixman pixman-dev cairo cairo-dev pango pango-dev \
     libjpeg-turbo-dev freetype-dev giflib-dev libpng-dev
 
+# Set the working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the container
@@ -20,6 +21,21 @@ COPY . .
 
 # Build the application
 RUN npm run build
+
+# Stage 2: Runtime stage
+FROM node:18-alpine
+
+# Install only the runtime dependencies for node-canvas
+RUN apk add --no-cache \
+    pixman cairo pango libjpeg-turbo freetype giflib libpng
+
+# Set the working directory
+WORKDIR /app
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
 
 # Expose the port the app will run on
 EXPOSE 3000
