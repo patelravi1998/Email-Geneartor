@@ -116,7 +116,7 @@ export class UserService {
         const nameTextHeight = parseInt(ctx.font, 10); // Extract font size from the font string
 
         // Calculate X and Y coordinates for centered text
-        const nameX = boxX + (boxWidth - nameTextWidth) / 2; // Center horizontally
+        const nameX = boxX + 200 // Center horizontally
         const nameY = boxY + (boxHeight + nameTextHeight) / 2; // Center vertically
 
         // Set text alignment and draw the text
