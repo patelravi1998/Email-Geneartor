@@ -125,23 +125,25 @@ export class UserService {
 
         // Draw the text at the centered position
         ctx.fillText(name, nameX, nameY);
+        console.log("coming here");
 
+        const imageBuffer = canvas.toBuffer("image/png");
         // Save the canvas to a file
-        await new Promise((resolve, reject) => {
-          const out = fs.createWriteStream(outputPath);
-          const stream = canvas.createPNGStream();
-          stream.pipe(out);
-          out.on("finish", () => resolve);
-          out.on("error", reject);
-        });
-
+        // await new Promise((resolve, reject) => {
+        //   const out = fs.createWriteStream(outputPath);
+        //   const stream = canvas.createPNGStream();
+        //   stream.pipe(out);
+        //   out.on("finish", () => resolve);
+        //   out.on("error", reject);
+        // });
+        console.log("coming here 2");
         console.log(`Certificate saved at ${outputPath}`);
 
         // Upload the certificate to S3
-        const rawData = fs.readFileSync(outputPath);
+        // const rawData = fs.readFileSync(outputPath);
         const imgKey = `certificates/${Date.now()}_certificate_${name}.png`;
         const resultFromUploadToS3 = await PublicService.uploadToS3(
-          rawData,
+          imageBuffer,
           `certificate_${name}.png`,
           imgKey
         );
@@ -162,8 +164,8 @@ export class UserService {
         certificateSession.certificate = resultFromUploadToS3.Location;
         await certificateSession.save();
 
-        // Remove the local file
-        fs.unlinkSync(outputPath);
+        // // Remove the local file
+        // fs.unlinkSync(outputPath);
 
         return resultFromUploadToS3.Location;
       } catch (error) {
@@ -175,6 +177,7 @@ export class UserService {
         );
       }
     } else {
+      console.log("coming here");
       return certificateSession.certificate;
     }
   }
