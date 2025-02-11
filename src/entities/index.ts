@@ -1,1 +1,2 @@
-export * from "./ceritificate";
+export * from './EmailGenerator'
+export * from './EmailResponse'

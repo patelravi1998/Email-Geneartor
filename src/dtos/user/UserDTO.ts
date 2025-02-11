@@ -77,3 +77,15 @@ export class  quizDtos {
   question_id?: number;
   answer?: number;
 }
+
+export class  ipAddressDTO {
+  ipadress?: string;
+}
+
+export class EmailDTO {
+  recipient?: string;
+  from?: string;
+  subject?: string;
+  Date?: string;
+  ["body-html"]?: string;
+}

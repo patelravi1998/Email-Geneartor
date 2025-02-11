@@ -139,4 +139,18 @@ const quizSchema = Joi.object({
   question_id:Joi.number().optional(),
   answer: Joi.number().optional()
 });
-export { loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema}
+
+const ipAddressSchema = Joi.object({
+  ipadress:Joi.string().required()
+});
+
+const ipadress = Joi.string().required()
+
+const emailSchema = Joi.object({
+  recipient: Joi.string().required(),
+  from: Joi.string().required(),
+  subject: Joi.string().required(),
+  Date: Joi.string().required(),
+  "body-html": Joi.string().required(), // Enclosed in quotes
+});
+export { ipAddressSchema,ipadress,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema}

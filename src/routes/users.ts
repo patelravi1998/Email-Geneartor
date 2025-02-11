@@ -6,6 +6,7 @@ import { authMiddleware } from "../middleware/verifyToken";
 
 const router = express.Router();
 
-router.post("/generate_certificate", UserController.genearteCertificate);
-
+router.post('/generateEmail', UserController.generateEmail);  
+router.post('/receive_email', UserController.receiveEmail);  
+router.get('/userMails', UserController.getReceipientMails); 
 export default router;

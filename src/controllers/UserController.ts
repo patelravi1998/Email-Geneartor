@@ -4,34 +4,69 @@ import logger from "../utils/logger"; // Adjust path as needed
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
+import { changeUpiStatus ,ipAddressDTO,EmailDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress} from '../validations/userDTO' // Import UserResponseDTO
+
+
 
 export class UserController {
-  async genearteCertificate(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<any> {
+  async generateEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      const { mobile, name, designation } = req.body;
-
-      const certificateResult = await UserService.generateUserCertificate(
-        mobile,
-        name,
-        designation
-      );
-      if (certificateResult) {
-        await UserService.whatsaAppMessageSent(mobile, name, certificateResult);
-
-        res.sendSuccess(
-          200,
-          "Certifcate Generated Successfully",
-          certificateResult
-        );
+      const { error, value: data } = ipAddressSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const ipAddress: ipAddressDTO = data;
+      const response = await UserService.generateEmailAddress(ipAddress);
+      if (response) {
+        res.sendSuccess(200,"Email Generated Successfully",response);
       } else {
-        throw new ApiError(400, 400, "Failed To Generate Certificate");
+        throw new ApiError(400, 400, 'Failed to Generate Email');
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      // const { error, value: data } = emailSchema.validate(req.body);
+      // if (error) {
+      //   throw new ApiError(400, 400, error.details[0].message, error);
+      // }
+      const receivedEmaildata = req.body;
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of Email : ${JSON.stringify(req.body)}`
+      );
+      console.log(`>>>>>body`,req.body)
+      const emailData = await UserService.receiveMail(receivedEmaildata);
+      res.sendSuccess(200,"Email Received Successfully");
+    } catch (error) {
+       next(error);
+    }
+  }
+
+  async getReceipientMails(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const ipAddress: any = req.query.ipadress;
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Ip Address : ${ipAddress}`
+      );
+      console.log(`>>>>>body`,req.body)
+      const emailData = await UserService.getUserMails(ipAddress);
+      if(emailData){
+        res.sendSuccess(200,"Email Fetched Successfully",emailData);
+      }else{
+        throw new ApiError(400, 400, 'Emails Not Found');
+      }
+    } catch (error) {
+       next(error);
     }
   }
 }
