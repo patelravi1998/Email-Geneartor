@@ -2,19 +2,21 @@
 
 import { EmailGenerator,EmailResponse } from "../entities";
 import { ApiError } from "../middleware/errors";
-// import logger from '../utils/logger';
 import axios from "axios";
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import PublicService from "../services/PublicService";
-import logger from "../utils/logger";
 import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
   changeUpiStatus,ipAddressDTO,EmailDTO
 } from "../dtos/user/UserDTO";
+import { getManager } from 'typeorm';
+import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
+
+
 
 
 export class UserService {
@@ -26,16 +28,10 @@ export class UserService {
     emailData.generated_email = email;
     emailData.ipaddress=ipAddressData.ipadress!
     await emailData.save();
-    logger.info(
-      `Email Generated: ${JSON.stringify(emailData)}`
-    );
     return email;
   }
   
   async receiveMail(receivedEmaildata:any): Promise<any> {
-    logger.info(
-      `Request Body Of Email Service: ${JSON.stringify(receivedEmaildata)}`
-    );
     if(isEmpty(receivedEmaildata.recipient)){
       throw new ApiError(400, 400, "Invalid Mail");
     }
@@ -57,19 +53,28 @@ export class UserService {
     }
   }
 
-  async getUserMails(ipAddress:string): Promise<any> {
-    logger.info(
-      `Requested Body Of Email Service: ${JSON.stringify(ipAddress)}`
-    );
-    if(isEmpty(ipAddress)){
+  async getUserMails(ipAddress: string): Promise<any> {
+    if (isEmpty(ipAddress)) {
       throw new ApiError(400, 400, "Invalid User");
     }
-    const existingMail = await EmailResponse.find({
-      where: { ipaddress: ipAddress },
-      order: { id: "DESC" } // Corrected order syntax
-    });
-    return existingMail
+  
+    try {
+      // Initialize the data source
+  
+      // Use the 'query' method from DataSource
+      const result = await mySQl_dataSource!.query(
+        `SELECT * FROM email_response WHERE ipaddress = ? ORDER BY id DESC`,
+        [ipAddress]  // Parameterized query to prevent SQL injection
+      );
+      
+      return result;
+    } catch (error) {
+      console.error("Error fetching user mails:", error);
+      throw new ApiError(500, 500, "Internal Server Error");
+    }
   }
+  
+  
 }
 
 // Export a singleton instance if desired

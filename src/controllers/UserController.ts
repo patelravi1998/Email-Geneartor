@@ -1,6 +1,5 @@
 // src/controllers/UserController.ts
 
-import logger from "../utils/logger"; // Adjust path as needed
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
@@ -35,12 +34,6 @@ export class UserController {
       //   throw new ApiError(400, 400, error.details[0].message, error);
       // }
       const receivedEmaildata = req.body;
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of Email : ${JSON.stringify(req.body)}`
-      );
       console.log(`>>>>>body`,req.body)
       const emailData = await UserService.receiveMail(receivedEmaildata);
       res.sendSuccess(200,"Email Received Successfully");
@@ -52,13 +45,7 @@ export class UserController {
   async getReceipientMails(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const ipAddress: any = req.query.ipadress;
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Ip Address : ${ipAddress}`
-      );
-      console.log(`>>>>>body`,req.body)
+      console.log(`>>>>ipAddress`,ipAddress)
       const emailData = await UserService.getUserMails(ipAddress);
       if(emailData){
         res.sendSuccess(200,"Email Fetched Successfully",emailData);

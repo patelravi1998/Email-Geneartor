@@ -37,7 +37,7 @@ const environment = process.env.NODE_ENV || "DEVELOPMENT";
 console.log(environment);
 databaseConfig = config[environment];
 
-let mySQl_dataSource: DataSource | null = null;
+export let mySQl_dataSource: DataSource | null = null;
 const connectDB = async (options?: { journeyId?: string }) => {
   const { journeyId } = options || {};
 

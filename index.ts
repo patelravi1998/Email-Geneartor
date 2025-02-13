@@ -8,12 +8,10 @@ import { notFoundMiddleware } from './src/middleware/notFoundMiddleware';
 import { setSecurityHeaders, handleCors, rateLimiter } from './src/middleware/securityMiddleware';
 import routes from './src/routes';
 import dotenv from 'dotenv';
-import { CloudWatchLogger } from './src/utils/newLogger';
 
 dotenv.config();
 
 const app: Application = express();
-const logger = CloudWatchLogger({ logGroupName: "FMC_AMBRIVA_NAME", logStreamName: "TEMP" });
 
 // Middleware setup
 app.use(attachJourneyId);
@@ -35,12 +33,10 @@ connectDB()
 
     app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
-      logger.info("server_start", { message: `Server started on port ${PORT}` });
     });
   })
   .catch((error) => {
     console.error(`❌ Failed to connect to MySQL: ${error.message}`);
-    logger.error("db_connection_failed", { error: error.message });
     process.exit(1);
   });
 
@@ -60,7 +56,3 @@ app.use(errorHandler);
 
 export default app;
 
-// Logging test
-logger.info("temp_log", {
-  data: { test: "test" }
-});
