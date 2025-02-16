@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc && npm run copy-assets",
-    "dev": "NODE_OPTIONS='--max-old-space-size=512' ts-node-dev --exit-child index.ts",
+    "dev": "ts-node-dev --exit-child index.ts",
     "migrate": "ts-node src/migrations/index.ts",
     "seed": "ts-node src/seeders/index.ts",
     "clean": "rm -rf dist",

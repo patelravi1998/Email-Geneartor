@@ -82,6 +82,10 @@ export class  ipAddressDTO {
   ipadress?: string;
 }
 
+export class  mailDTO {
+  mail?: string;
+}
+
 export class EmailDTO {
   recipient?: string;
   from?: string;

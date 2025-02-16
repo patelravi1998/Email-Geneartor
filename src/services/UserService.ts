@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO
 } from "../dtos/user/UserDTO";
 import { getManager } from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -53,26 +53,47 @@ export class UserService {
     }
   }
 
-  async getUserMails(ipAddress: string): Promise<any> {
-    if (isEmpty(ipAddress)) {
+  async getUserMails(ipAddress: string, temporaryEmail: string): Promise<any> {
+    if (isEmpty(ipAddress) || isEmpty(temporaryEmail)) {
       throw new ApiError(400, 400, "Invalid User");
     }
   
     try {
-      // Initialize the data source
-  
       // Use the 'query' method from DataSource
       const result = await mySQl_dataSource!.query(
-        `SELECT * FROM email_response WHERE ipaddress = ? ORDER BY id DESC`,
-        [ipAddress]  // Parameterized query to prevent SQL injection
+        `SELECT * FROM email_response WHERE ipaddress = ? AND generated_email = ? and status=1 ORDER BY id DESC`,
+        [ipAddress, temporaryEmail] // Pass both parameters in the array
       );
-      
+  
       return result;
     } catch (error) {
       console.error("Error fetching user mails:", error);
       throw new ApiError(500, 500, "Internal Server Error");
     }
   }
+
+  async deleteInboxEmails(temporaryEmail: mailDTO): Promise<any> {
+    if (isEmpty(temporaryEmail.mail)) {
+      throw new ApiError(400, 400, "Invalid User");
+    }
+  
+    try {
+      // Use the 'query' method from DataSource
+      const result = await mySQl_dataSource!.query(
+        `UPDATE email_response SET status = 0 WHERE generated_email = ? AND status = 1`,
+        [temporaryEmail.mail] // Pass the email as a parameter
+      );
+  
+      return result;
+    } catch (error) {
+      console.error("Error deleting inbox emails:", error);
+      throw new ApiError(500, 500, "Internal Server Error");
+    }
+  }
+  
+
+  
+  
   
   
 }

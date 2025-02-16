@@ -144,6 +144,10 @@ const ipAddressSchema = Joi.object({
   ipadress:Joi.string().required()
 });
 
+const deleteMailSchema = Joi.object({
+  mail:Joi.string().required()
+});
+
 const ipadress = Joi.string().required()
 
 const emailSchema = Joi.object({
@@ -153,4 +157,4 @@ const emailSchema = Joi.object({
   Date: Joi.string().required(),
   "body-html": Joi.string().required(), // Enclosed in quotes
 });
-export { ipAddressSchema,ipadress,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema}
+export { ipAddressSchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema}
