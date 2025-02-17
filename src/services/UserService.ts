@@ -44,6 +44,7 @@ export class UserService {
       emailData.ipaddress=existingMail.ipaddress
       emailData.date=receivedEmaildata.Date!
       emailData.sender_email=receivedEmaildata.from!
+      emailData.sender_name=receivedEmaildata.from!
       emailData.subject=receivedEmaildata.subject!
       emailData.body=cleanedHtml
       await emailData.save(); 
@@ -78,7 +79,7 @@ export class UserService {
     }
   
     try {
-      // Use the 'query' method from DataSource
+      // Use the 'query' method from DataSource 
       const result = await mySQl_dataSource!.query(
         `UPDATE email_response SET status = 0 WHERE generated_email = ? AND status = 1`,
         [temporaryEmail.mail] // Pass the email as a parameter
