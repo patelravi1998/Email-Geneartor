@@ -20,16 +20,27 @@ import { mySQl_dataSource } from '../config/database'; // Ensure you have this o
 
 
 export class UserService {
-  async generateEmailAddress(ipAddressData:ipAddressDTO): Promise<any> {
+  async generateEmailAddress(ipAddressData: ipAddressDTO): Promise<string> {
     const domain = "markdownviewer.online"; 
-    const username = faker.internet.userName().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6); 
-    const email = `${username}@${domain}`;
-    const emailData= new EmailGenerator()
+    let email: string;
+    let emailExists: EmailGenerator | null;
+  
+    do {
+      const username = faker.internet.userName().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6);
+      email = `${username}@${domain}`;
+  
+      emailExists = await EmailGenerator.findOne({ where: { generated_email: email } });
+  
+    } while (emailExists); // Keep generating until we get a unique email
+  
+    const emailData = new EmailGenerator();
     emailData.generated_email = email;
-    emailData.ipaddress=ipAddressData.ipadress!
+    emailData.ipaddress = ipAddressData.ipadress!;
     await emailData.save();
+  
     return email;
   }
+  
   
   async receiveMail(receivedEmaildata:any): Promise<any> {
     if(isEmpty(receivedEmaildata.recipient)){
