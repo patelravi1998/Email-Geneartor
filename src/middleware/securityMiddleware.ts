@@ -38,8 +38,12 @@ const helmetMiddleware = helmet({
 
 // CORS middleware configuration
 const corsOptions = {
-  origin: '*', // Replace with your frontend URL in production
+  origin: '*', // Allows all origins
+  credentials: true, // Allows cookies and authentication headers
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 };
+
 const corsMiddleware = cors(corsOptions);
 
 // CSRF middleware configuration
