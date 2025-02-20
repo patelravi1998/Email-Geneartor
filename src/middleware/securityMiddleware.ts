@@ -18,6 +18,7 @@ const helmetMiddleware = helmet({
 });
 
 // CORS setup
+
 const corsOptions = {
   origin: ['https://tempemailbox.com/'], // Change in production
   credentials: true, // Allow cookies if needed
