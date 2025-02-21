@@ -5,6 +5,8 @@ import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
 import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO} from '../dtos/user/UserDTO';
 import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema} from '../validations/userDTO' // Import UserResponseDTO
+import logger from '../utils/logger'; // Adjust path as needed
+
 
 
 
@@ -15,8 +17,17 @@ export class UserController {
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);
       }
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Generate Email : ${JSON.stringify(req.body)}`
+      );
       const ipAddress: ipAddressDTO = data;
       const response = await UserService.generateEmailAddress(ipAddress);
+      logger.info(
+        `Response  Of  Generate Email Api: ${JSON.stringify(response)}`
+      );
       if (response) {
         res.sendSuccess(200,"Email Generated Successfully",response);
       } else {
@@ -29,10 +40,12 @@ export class UserController {
 
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      // const { error, value: data } = emailSchema.validate(req.body);
-      // if (error) {
-      //   throw new ApiError(400, 400, error.details[0].message, error);
-      // }
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
+      );
       const receivedEmaildata = req.body;
       console.log(`>>>>>body`,req.body)
       const emailData = await UserService.receiveMail(receivedEmaildata);

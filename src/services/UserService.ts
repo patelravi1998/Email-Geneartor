@@ -15,6 +15,8 @@ import {
 } from "../dtos/user/UserDTO";
 import { getManager } from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
+import logger from '../utils/logger'; // Adjust path as needed
+
 
 
 
@@ -48,6 +50,9 @@ export class UserService {
     }
     const existingMail=await EmailGenerator.findOne({where:{generated_email:receivedEmaildata.recipient}})
     if(existingMail){
+      logger.info(
+        `Request Body In Service : ${JSON.stringify(receivedEmaildata)}`
+      );
       const bodyHtml=receivedEmaildata["body-html"]
       const cleanedHtml = bodyHtml!.replace(/[\r\n\t]/g, '');
       const emailData= new EmailResponse()
