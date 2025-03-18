@@ -40,18 +40,21 @@ export class UserController {
 
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
-      );
+      logger.info(`Request Node Environment : ${process.env.NODE_ENV}`);
+      logger.info(`Request Body Of Receive Email : ${JSON.stringify(req.body)}`);
+  
       const receivedEmaildata = req.body;
-      console.log(`>>>>>body`,req.body)
+      console.log(`>>>>>body`, req.body);
+  
+      // Log attachments if they exist
+      if (receivedEmaildata.attachments && receivedEmaildata.attachments.length > 0) {
+        logger.info(`Attachments Received: ${JSON.stringify(receivedEmaildata.attachments)}`);
+      }
+  
       const emailData = await UserService.receiveMail(receivedEmaildata);
-      res.sendSuccess(200,"Email Received Successfully");
+      res.sendSuccess(200, "Email Received Successfully");
     } catch (error) {
-       next(error);
+      next(error);
     }
   }
 

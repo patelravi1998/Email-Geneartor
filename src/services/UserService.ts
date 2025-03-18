@@ -46,30 +46,37 @@ export class UserService {
   
   
   
-  async receiveMail(receivedEmaildata:any): Promise<any> {
-    if(isEmpty(receivedEmaildata.recipient)){
+  async receiveMail(receivedEmaildata: any): Promise<any> {
+    if (isEmpty(receivedEmaildata.recipient)) {
       throw new ApiError(400, 400, "Invalid Mail");
     }
-    const existingMail=await EmailGenerator.findOne({where:{generated_email:receivedEmaildata.recipient}})
-    if(existingMail){
-      logger.info(
-        `Request Body In Service : ${JSON.stringify(receivedEmaildata)}`
-      );
-      const bodyHtml=receivedEmaildata["body-html"]
-      const cleanedHtml = bodyHtml!.replace(/[\r\n\t]/g, '');
-      const emailData= new EmailResponse()
-      emailData.generated_email = receivedEmaildata.recipient!; 
-      emailData.ipaddress=existingMail.ipaddress
-      emailData.date=receivedEmaildata.Date!
-      emailData.sender_email=receivedEmaildata.from!
-      emailData.sender_name=receivedEmaildata.from!
-      emailData.subject=receivedEmaildata.subject!
-      emailData.body=cleanedHtml
-      await emailData.save(); 
-      return emailData;
-    }else{
-      throw new ApiError(400, 400, "Receipient Mail Not Found");
+  
+    const existingMail = await EmailGenerator.findOne({ where: { generated_email: receivedEmaildata.recipient } });
+    if (!existingMail) {
+      throw new ApiError(400, 400, "Recipient Mail Not Found");
     }
+  
+    logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
+  
+    const bodyHtml = receivedEmaildata["body-html"];
+    const cleanedHtml = bodyHtml ? bodyHtml.replace(/[\r\n\t]/g, '') : "";
+  
+    const emailData = new EmailResponse();
+    emailData.generated_email = receivedEmaildata.recipient;
+    emailData.ipaddress = existingMail.ipaddress;
+    emailData.date = receivedEmaildata.Date;
+    emailData.sender_email = receivedEmaildata.from;
+    emailData.sender_name = receivedEmaildata.from;
+    emailData.subject = receivedEmaildata.subject;
+    emailData.body = cleanedHtml;
+  
+    // Save attachments if they exist
+    // if (receivedEmaildata.attachments && receivedEmaildata.attachments.length > 0) {
+    //   emailData.attachments = JSON.stringify(receivedEmaildata.attachments); // Save as JSON string
+    // }
+  
+    await emailData.save();
+    return emailData;
   }
 
   async getUserMails(ipAddress: string, temporaryEmail: string): Promise<any> {
