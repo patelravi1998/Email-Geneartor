@@ -46,7 +46,7 @@ export class UserService {
   
   
   
-  async receiveMail(receivedEmaildata: any): Promise<any> {
+  async receiveMail(receivedEmaildata: any,attachmentData:any): Promise<any> {
     if (isEmpty(receivedEmaildata.recipient)) {
       throw new ApiError(400, 400, "Invalid Mail");
     }
@@ -71,9 +71,9 @@ export class UserService {
     emailData.body = cleanedHtml;
   
     // Save attachments if they exist
-    // if (receivedEmaildata.attachments && receivedEmaildata.attachments.length > 0) {
-    //   emailData.attachments = JSON.stringify(receivedEmaildata.attachments); // Save as JSON string
-    // }
+    if (attachmentData) {
+      emailData.attachments = JSON.stringify(attachmentData); // Save as JSON string
+    }
   
     await emailData.save();
     return emailData;

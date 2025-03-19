@@ -35,6 +35,10 @@ import {
 
     @Column({ type: 'tinyint', default: 1 })
     status?: number;
+
+    @Column({ type: 'text', nullable: true })
+    attachments!: string;
+    
   
     @CreateDateColumn({ type: 'datetime' })
     created_at!: Date;

@@ -43,15 +43,29 @@ export class UserController {
       logger.info(`Request Node Environment : ${process.env.NODE_ENV}`);
       logger.info(`Request Body Of Receive Email : ${JSON.stringify(req.body)}`);
   
+      // Check if there are any files (attachments) in the request
+      let attachmentData
+
+      if (Array.isArray(req.files) && req.files.length > 0) {
+        logger.info(`Attachments Received: ${JSON.stringify(req.files)}`);
+  
+        // Process each attachment
+        for (const file of req.files) {
+           attachmentData = {
+            filename: file.originalname,
+            content: file.buffer.toString('base64'), // Convert file buffer to base64
+            contentType: file.mimetype,
+            size: file.size,
+          };
+  
+          // Save the attachment data to the database or process it as needed
+        }
+      }
+  
       const receivedEmaildata = req.body;
       console.log(`>>>>>body`, req.body);
   
-      // Log attachments if they exist
-      if (receivedEmaildata.attachments && receivedEmaildata.attachments.length > 0) {
-        logger.info(`Attachments Received: ${JSON.stringify(receivedEmaildata.attachments)}`);
-      }
-  
-      const emailData = await UserService.receiveMail(receivedEmaildata);
+      const emailData = await UserService.receiveMail(receivedEmaildata,attachmentData);
       res.sendSuccess(200, "Email Received Successfully");
     } catch (error) {
       next(error);
