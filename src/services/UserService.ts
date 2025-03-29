@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailResponse } from "../entities";
+import { EmailGenerator,EmailOrders,EmailResponse } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -11,11 +11,13 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO
 } from "../dtos/user/UserDTO";
 import { getManager } from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
 import logger from '../utils/logger'; // Adjust path as needed
+import crypto from 'crypto';
+import {razorpay} from '../razorpay'; // path adjust karo accordingly
 
 
 
@@ -117,7 +119,65 @@ export class UserService {
     }
   }
   
+  async createOrderDetails(data: orderDTO): Promise<any> {
+    const emailOrder= new EmailOrders()
+    emailOrder.email=data.email!
+    emailOrder.days=data.days!
+    emailOrder.amount=data.amount!
+    emailOrder.expiry_date=data.expiry_date!
+    emailOrder.user_email=data.user_email!
+    emailOrder.mobile=data.mobile!
+    emailOrder.payment_status="initiated"
+    await emailOrder.save()
+    const order = await razorpay.orders.create({
+      amount: data.amount! * 100, // paise
+      currency: "INR",
+      receipt: `receipt_${emailOrder.id}`,
+      notes: {
+        order_db_id: emailOrder.id
+      }
+    });
+    emailOrder.razorpay_order_id=order.id
+    await emailOrder.save()
+    return emailOrder
+  }
+  
+  async savePaymentStatus(data: any, signature: any): Promise<any> {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
 
+    const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(data)
+        .digest('hex');
+
+    // Verify Signature
+    if (expectedSignature !== signature) {
+        throw new ApiError(500, 500, "Invalid Signature");
+    }
+
+    const response = JSON.parse(data.toString());
+
+    logger.info("✅ Webhook Received Data: " + JSON.stringify(response));
+
+    const payment = response.payload.payment.entity; // ✅ fixed here
+    const razorpay_order_id = payment.order_id;
+
+    if (!razorpay_order_id) {
+        logger.error("❌ Missing order_id in payment webhook");
+        throw new ApiError(500, 500, "Missing order_id");
+    }
+
+    const order = await EmailOrders.findOne({ where: { razorpay_order_id } });
+    if (!order) {
+        logger.error("❌ Order not found for order_id: " + razorpay_order_id);
+        throw new ApiError(500, 500, "Order not found");
+    }
+
+    order.payment_status = "paid";
+    await order.save();
+}
+
+  
   
   
   

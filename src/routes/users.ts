@@ -10,4 +10,7 @@ router.post('/generateEmail', UserController.generateEmail);
 router.post('/receive_email', UserController.receiveEmail);  
 router.get('/userMails', UserController.getReceipientMails); 
 router.post('/delete_mails', UserController.deleteInboxMail);  
+router.post('/create-order', UserController.createOrder);  
+router.post('/payment-webhook', UserController.savePaymentWebhook);  
+
 export default router;

@@ -93,3 +93,12 @@ export class EmailDTO {
   Date?: string;
   ["body-html"]?: string;
 }
+
+export class  orderDTO {
+  email?: string;
+  user_email?: string;
+  mobile?: string;
+  days?: number;
+  amount?: number;
+  expiry_date?: string;
+}

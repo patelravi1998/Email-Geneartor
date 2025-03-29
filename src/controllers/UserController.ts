@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 
@@ -107,6 +107,52 @@ export class UserController {
       next(error);
     }
   }
+
+  async createOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Create Order : ${JSON.stringify(req.body)}`
+      );
+      const { error, value: data } = orderSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const order: orderDTO = data;
+      const response = await UserService.createOrderDetails(order);
+      if (response) {
+        res.sendSuccess(200,"Order Created Successfully",response);
+      } else {
+        throw new ApiError(400, 400, 'Failed to Create Order');
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async savePaymentWebhook(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Payment Webhook : ${JSON.stringify(req.body)}`
+      );
+      const signature = req.headers['x-razorpay-signature'] as string;
+
+      const response = await UserService.savePaymentStatus(req.body,signature);
+      if (response) {
+        res.sendSuccess(200,"Payment Status Saved Successfully",response);
+      } else {
+        throw new ApiError(400, 400, 'Failed to Save Payment Status');
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
 }
 
