@@ -152,7 +152,7 @@ export class UserService {
     );
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
     logger.info(
-      `below webhookSecret`
+      `below webhookSecret :${webhookSecret}`
     );
 
     const expectedSignature = crypto
