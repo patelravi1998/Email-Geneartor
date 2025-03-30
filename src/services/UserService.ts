@@ -154,7 +154,9 @@ export class UserService {
     logger.info(
       `below webhookSecret :${webhookSecret}`
     );
-
+    logger.info(
+      `signature haiiiaiaiaia${signature}`
+    );
     const expectedSignature = crypto
       .createHmac('sha256', webhookSecret)
       .update(data)
@@ -169,9 +171,7 @@ export class UserService {
       `expectedSignature ${expectedSignature}`
     );
 
-    logger.info(
-      `signature ${signature}`
-    );
+
     if (expectedSignature !== signature) {
       logger.info(
         `Invalid Signature`
