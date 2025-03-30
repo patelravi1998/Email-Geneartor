@@ -121,6 +121,7 @@ export class UserService {
   
   async createOrderDetails(data: orderDTO): Promise<any> {
     const emailOrder= new EmailOrders()
+    console.log(`>>>>>>data${JSON.stringify(data)}`)
     emailOrder.email=data.email!
     emailOrder.days=data.days!
     emailOrder.amount=data.amount!
@@ -143,6 +144,12 @@ export class UserService {
   }
   
   async savePaymentStatus(data: any, signature: any): Promise<any> {
+    logger.info(
+      `Request Node Environment service: ${process.env.NODE_ENV}`
+    );
+    logger.info(
+      `Request Body Of  Payment Webhook service : ${JSON.stringify(data)}`
+    );
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
 
     const expectedSignature = crypto
@@ -152,24 +159,33 @@ export class UserService {
 
     // Verify Signature
     if (expectedSignature !== signature) {
+      logger.info(
+        `Invalid Signature`
+      );
         throw new ApiError(500, 500, "Invalid Signature");
     }
 
     const response = JSON.parse(data.toString());
 
-    logger.info("✅ Webhook Received Data: " + JSON.stringify(response));
+    logger.info(
+      `Webhook Received Data: ${JSON.stringify(response)}`
+    );
 
     const payment = response.payload.payment.entity; // ✅ fixed here
     const razorpay_order_id = payment.order_id;
 
     if (!razorpay_order_id) {
-        logger.error("❌ Missing order_id in payment webhook");
+        logger.info(
+          `Missing order_id in payment webhook`
+        );
         throw new ApiError(500, 500, "Missing order_id");
     }
 
     const order = await EmailOrders.findOne({ where: { razorpay_order_id } });
     if (!order) {
-        logger.error("❌ Order not found for order_id: " + razorpay_order_id);
+        logger.info(
+          `Order Not Found For Order Id: ${razorpay_order_id} `
+        );
         throw new ApiError(500, 500, "Order not found");
     }
 
