@@ -144,68 +144,53 @@ export class UserService {
   }
   
   async savePaymentStatus(data: any, signature: any): Promise<any> {
-    logger.info(
-      `Request Node Environment service: ${process.env.NODE_ENV}`
-    );
-    logger.info(
-      `Request Body Of  Payment Webhook service : ${JSON.stringify(data)}`
-    );
+    logger.info(`Request Node Environment service: ${process.env.NODE_ENV}`);
+    logger.info(`Request Body Of Payment Webhook service: ${JSON.stringify(data)}`);
+
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
-    logger.info(
-      `below webhookSecret :${webhookSecret}`
-    );
-    logger.info(
-      `signature haiiiaiaiaia${signature}`
-    );
+    logger.info(`Webhook Secret: ${webhookSecret}`);
+    logger.info(`Received Signature: ${signature}`);
+
+    // ✅ Ensure `data` is a string before hashing
     const expectedSignature = crypto
-      .createHmac('sha256', webhookSecret)
-      .update(data)
-      .digest('hex');
-      logger.info(
-        `below expectedSignature`
-      );
+        .createHmac("sha256", webhookSecret)
+        .update(JSON.stringify(data)) // Convert to string
+        .digest("hex");
+
+    logger.info(`Expected Signature: ${expectedSignature}`);
 
     // Verify Signature
-
-    logger.info(
-      `expectedSignature ${expectedSignature}`
-    );
-
-
     if (expectedSignature !== signature) {
-      logger.info(
-        `Invalid Signature`
-      );
+        logger.error(`Invalid Signature`);
         throw new ApiError(500, 500, "Invalid Signature");
     }
 
+    logger.info(`Signature Verified Successfully`);
+
     const response = JSON.parse(data.toString());
 
-    logger.info(
-      `Webhook Received Data: ${JSON.stringify(response)}`
-    );
+    logger.info(`Webhook Received Data: ${JSON.stringify(response)}`);
 
-    const payment = response.payload.payment.entity; // ✅ fixed here
+    const payment = response.payload.payment.entity;
     const razorpay_order_id = payment.order_id;
 
     if (!razorpay_order_id) {
-        logger.info(
-          `Missing order_id in payment webhook`
-        );
+        logger.error(`Missing order_id in payment webhook`);
         throw new ApiError(500, 500, "Missing order_id");
     }
 
     const order = await EmailOrders.findOne({ where: { razorpay_order_id } });
     if (!order) {
-        logger.info(
-          `Order Not Found For Order Id: ${razorpay_order_id} `
-        );
+        logger.error(`Order Not Found For Order Id: ${razorpay_order_id}`);
         throw new ApiError(500, 500, "Order not found");
     }
 
     order.payment_status = "paid";
     await order.save();
-}
+
+    logger.info(`Order ${razorpay_order_id} marked as PAID successfully`);
+  }
+
 
   
   
