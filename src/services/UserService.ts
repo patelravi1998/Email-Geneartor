@@ -151,13 +151,27 @@ export class UserService {
       `Request Body Of  Payment Webhook service : ${JSON.stringify(data)}`
     );
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+    logger.info(
+      `below webhookSecret`
+    );
 
     const expectedSignature = crypto
-        .createHmac('sha256', webhookSecret)
-        .update(data)
-        .digest('hex');
+      .createHmac('sha256', webhookSecret)
+      .update(data)
+      .digest('hex');
+      logger.info(
+        `below expectedSignature`
+      );
 
     // Verify Signature
+
+    logger.info(
+      `expectedSignature ${expectedSignature}`
+    );
+
+    logger.info(
+      `signature ${signature}`
+    );
     if (expectedSignature !== signature) {
       logger.info(
         `Invalid Signature`
