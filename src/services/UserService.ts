@@ -167,19 +167,19 @@ export class UserService {
 
     logger.info(`Signature Verified Successfully`);
 
-    const response = JSON.parse(data.toString());
+    // const response = JSON.parse(data.toString());
 
-    logger.info(`Webhook Received Data: ${JSON.stringify(response)}`);
+    // logger.info(`Webhook Received Data: ${JSON.stringify(response)}`);
 
-    const payment = response.payload.payment.entity;
-    const razorpay_order_id = payment.order_id;
+    // const payment = response.payload.payment.entity;
+    const razorpay_order_id = data.payload.payment.entity.order_id
 
     if (!razorpay_order_id) {
         logger.error(`Missing order_id in payment webhook`);
         throw new ApiError(500, 500, "Missing order_id");
     }
 
-    const order = await EmailOrders.findOne({ where: { razorpay_order_id } });
+    const order = await EmailOrders.findOne({ where: { razorpay_order_id:razorpay_order_id } });
     if (!order) {
         logger.error(`Order Not Found For Order Id: ${razorpay_order_id}`);
         throw new ApiError(500, 500, "Order not found");
