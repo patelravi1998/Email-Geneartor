@@ -153,6 +153,19 @@ export class UserController {
     }
   }
   
+  async getExpirationDate(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const temporaryEmail: any = req.query.temporaryEmail;
+
+      
+      console.log(`>>>>temporaryEmail`,temporaryEmail)
+      const emailData = await UserService.getExpirationDateForMail(temporaryEmail);
+      res.sendSuccess(200,"Email Fetched Successfully",emailData);
+    } catch (error) {
+       next(error);
+    }
+  }
+  
   
 }
 

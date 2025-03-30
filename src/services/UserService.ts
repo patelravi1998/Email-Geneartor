@@ -191,12 +191,19 @@ export class UserService {
     logger.info(`Order ${razorpay_order_id} marked as PAID successfully`);
   }
 
+  async getExpirationDateForMail(temporaryEmail: string): Promise<any> {
+    let expiryDate=""
+    const emailData= await EmailGenerator.findOneBy({generated_email:temporaryEmail})
+    if(isEmpty(emailData)){
+      throw new ApiError(500, 500, "Invalid Email");
+    }
+    const emailOrder= await EmailOrders.findOne({where:{email:temporaryEmail}})
+    if(!isEmpty(emailOrder)){
+      expiryDate=emailOrder.expiry_date
+    }
+    return expiryDate
+  }
 
-  
-  
-  
-  
-  
 }
 
 // Export a singleton instance if desired

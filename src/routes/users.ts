@@ -12,5 +12,6 @@ router.get('/userMails', UserController.getReceipientMails);
 router.post('/delete_mails', UserController.deleteInboxMail);  
 router.post('/create-order', UserController.createOrder);  
 router.post('/payment-webhook', UserController.savePaymentWebhook);  
+router.get('/get_expiration_date', UserController.getExpirationDate); 
 
 export default router;
