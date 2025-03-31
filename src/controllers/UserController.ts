@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 
@@ -165,6 +165,49 @@ export class UserController {
        next(error);
     }
   }
+  
+  async userSignup(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      );
+      const { error, value: data } = signupSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const registerData: signupDTO = data;
+      
+      const result = await UserService.userRegistration(registerData);
+      res.sendSuccess(200,"User Registered Successfully",result);
+    } catch (error) {
+       next(error);
+    }
+  }
+
+  async userLogin(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      );
+      const { error, value: data } = signupSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const registerData: signupDTO = data;
+      
+      const result = await UserService.userLoginProcess(registerData);
+      res.sendSuccess(200,"User SignIn  Successfully",result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
   
 }

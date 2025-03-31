@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailOrders,EmailResponse } from "../entities";
+import { EmailGenerator,EmailOrders,EmailResponse, SystemUser } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -11,13 +11,17 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO
 } from "../dtos/user/UserDTO";
 import { getManager } from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
 import logger from '../utils/logger'; // Adjust path as needed
 import crypto from 'crypto';
 import {razorpay} from '../razorpay'; // path adjust karo accordingly
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+
 
 
 
@@ -203,6 +207,50 @@ export class UserService {
     }
     return expiryDate
   }
+
+  async userRegistration(data: signupDTO): Promise<any> {
+    const isUserExist= await SystemUser.findOne({where:{email:data.email}})
+    if(!isEmpty(isUserExist)){
+      throw new ApiError(500, 500, "Email already exists. Please log in.");
+    }
+    const hashedPassword = await bcrypt.hash(data.password!, 10);
+    const user = new SystemUser()
+    user.email=data.email!
+    user.password=hashedPassword
+    await user.save()
+  }
+
+  async userLoginProcess(data: signupDTO): Promise<any> {
+    // Check if user exists
+    const user = await SystemUser.findOne({ where: { email: data.email } });
+
+    if (!user) {
+      throw new ApiError(404, 404, "Email ID not found. Please sign up.");
+    }
+
+    // Compare the provided password with the hashed password
+    const isPasswordValid = await bcrypt.compare(data.password!, user.password);
+    if (!isPasswordValid) {
+      throw new ApiError(401, 401, "Invalid password.");
+    }
+    const secret=process.env.JWT_SECRET as string
+    console.log(`>>>>>secret`,secret)
+    const token = jwt.sign(
+      { id: user.id, email: user.email }, // Payload
+      secret, // Secret key
+      { expiresIn: "7d" } // Token expiration time
+    );
+
+    return {
+      message: "Login successful",
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+  
 
 }
 

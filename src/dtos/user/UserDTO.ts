@@ -86,6 +86,11 @@ export class  mailDTO {
   mail?: string;
 }
 
+export class  signupDTO {
+  email?: string;
+  password?: string;
+}
+
 export class EmailDTO {
   recipient?: string;
   from?: string;

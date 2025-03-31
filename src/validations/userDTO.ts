@@ -166,4 +166,9 @@ const orderSchema = Joi.object({
   amount:Joi.number().required(),
   expiry_date:Joi.string().required()
 });
-export { ipAddressSchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema}
+
+const signupSchema = Joi.object({
+  email:Joi.string().required(),
+  password:Joi.string().required()
+});
+export { ipAddressSchema,signupSchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema}
