@@ -13,13 +13,14 @@ import {
   UpdateUserDetailsDTO,
   changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO
 } from "../dtos/user/UserDTO";
-import { getManager } from 'typeorm';
+import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
 import logger from '../utils/logger'; // Adjust path as needed
 import crypto from 'crypto';
 import {razorpay} from '../razorpay'; // path adjust karo accordingly
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import moment from 'moment'
 
 
 
@@ -123,15 +124,14 @@ export class UserService {
     }
   }
   
-  async createOrderDetails(data: orderDTO): Promise<any> {
+  async createOrderDetails(data: orderDTO,userId:any): Promise<any> {
     const emailOrder= new EmailOrders()
     console.log(`>>>>>>data${JSON.stringify(data)}`)
     emailOrder.email=data.email!
     emailOrder.days=data.days!
     emailOrder.amount=data.amount!
     emailOrder.expiry_date=data.expiry_date!
-    emailOrder.user_email=data.user_email!
-    emailOrder.mobile=data.mobile!
+    emailOrder.user_id=userId
     emailOrder.payment_status="initiated"
     await emailOrder.save()
     const order = await razorpay.orders.create({
@@ -250,6 +250,23 @@ export class UserService {
       },
     };
   }
+
+  async getUserPurchasedMails(userId: any): Promise<any> {
+    let mails:any
+    const today = moment().format('YYYY-MM-DD');
+    const emailOrders = await EmailOrders.find({
+      where: {
+        user_id: userId,
+        expiry_date: MoreThan(today)
+      },
+      select: ["email"] // Only select the email field
+    });
+    if(emailOrders.length>0){
+      mails=emailOrders.map(order => order.email);
+    }
+    return mails
+  }
+  
   
 
 }

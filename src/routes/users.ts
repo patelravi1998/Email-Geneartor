@@ -10,11 +10,13 @@ router.post('/generateEmail', UserController.generateEmail);
 router.post('/receive_email', UserController.receiveEmail);  
 router.get('/userMails', UserController.getReceipientMails); 
 router.post('/delete_mails', UserController.deleteInboxMail);  
-router.post('/create-order', UserController.createOrder);  
+router.post('/create-order',[authMiddleware], UserController.createOrder);  
 router.post('/payment-webhook', UserController.savePaymentWebhook);  
 router.get('/get_expiration_date', UserController.getExpirationDate); 
 router.post('/signup', UserController.userSignup);
 router.post('/login', UserController.userLogin);  
+router.get('/user_mails',[authMiddleware], UserController.getUserMails); 
+
 
 
 

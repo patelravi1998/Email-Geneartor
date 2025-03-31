@@ -116,12 +116,16 @@ export class UserController {
       logger.info(
         `Request Body Of  Create Order : ${JSON.stringify(req.body)}`
       );
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
       const { error, value: data } = orderSchema.validate(req.body);
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);
       }
       const order: orderDTO = data;
-      const response = await UserService.createOrderDetails(order);
+      const response = await UserService.createOrderDetails(order,userId);
       if (response) {
         res.sendSuccess(200,"Order Created Successfully",response);
       } else {
@@ -209,6 +213,18 @@ export class UserController {
   }
   
   
+  async getUserMails(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
+      const response = await UserService.getUserPurchasedMails(userId);
+      res.sendSuccess(200,"User Mail Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
   
 }
 
