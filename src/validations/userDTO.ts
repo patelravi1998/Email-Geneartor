@@ -148,6 +148,12 @@ const deleteMailSchema = Joi.object({
   mail:Joi.string().required()
 });
 
+const userQuerySchema = Joi.object({
+  email:Joi.string().required(),
+  name:Joi.string().required(),
+  message:Joi.string().required()
+});
+
 const ipadress = Joi.string().required()
 
 const emailSchema = Joi.object({
@@ -171,4 +177,4 @@ const signupSchema = Joi.object({
   email:Joi.string().required(),
   password:Joi.string().required()
 });
-export { ipAddressSchema,signupSchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema}
+export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema}

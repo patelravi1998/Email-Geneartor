@@ -90,6 +90,11 @@ export class  signupDTO {
   email?: string;
   password?: string;
 }
+export class  userQueryDTO {
+  email?: string;
+  name?: string;
+  message?: string;
+}
 
 export class EmailDTO {
   recipient?: string;
