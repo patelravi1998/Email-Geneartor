@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,userQueryDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 
@@ -103,6 +103,20 @@ export class UserController {
       } else {
         throw new ApiError(400, 400, 'Failed to Delete Inbox Email');
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async saveUserSupportQuery(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = userQuerySchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const mail: userQueryDTO = data;
+      const response = await UserService.saveUserQuery(mail);
+      res.sendSuccess(200,"Message Sent Successfully");
     } catch (error) {
       next(error);
     }

@@ -86,6 +86,12 @@ export class  mailDTO {
   mail?: string;
 }
 
+export class  userQueryDTO {
+  email?: string;
+  name?: string;
+  message?: string;
+}
+
 export class EmailDTO {
   recipient?: string;
   from?: string;

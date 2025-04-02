@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailResponse } from "../entities";
+import { UserQuery, EmailGenerator,EmailResponse } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,userQueryDTO
 } from "../dtos/user/UserDTO";
 import { getManager } from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -117,7 +117,14 @@ export class UserService {
     }
   }
   
-
+  async saveUserQuery(data: userQueryDTO): Promise<any> {
+    const userQuery= new UserQuery()
+    userQuery.name=data.name!
+    userQuery.email=data.email!
+    userQuery.message=data.message!
+    await userQuery.save()
+  }
+  
   
   
   
