@@ -166,8 +166,6 @@ const emailSchema = Joi.object({
 
 const orderSchema = Joi.object({
   email:Joi.string().required(),
-  user_email:Joi.string().required(),
-  mobile:Joi.string().required(),
   days:Joi.number().required(),
   amount:Joi.number().required(),
   expiry_date:Joi.string().required()
