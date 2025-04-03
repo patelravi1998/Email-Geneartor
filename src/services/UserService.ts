@@ -133,6 +133,7 @@ export class UserService {
     emailOrder.expiry_date=data.expiry_date!
     emailOrder.user_id=userId
     emailOrder.payment_status="initiated"
+    emailOrder.ipaddress=data.ipaddress!
     await emailOrder.save()
     const order = await razorpay.orders.create({
       amount: data.amount! * 100, // paise
@@ -252,20 +253,19 @@ export class UserService {
   }
 
   async getUserPurchasedMails(userId: any): Promise<any> {
-    let mails:any
+    let mails:any=[]
     const today = moment().format('YYYY-MM-DD');
     const emailOrders = await EmailOrders.find({
       where: {
         user_id: userId,
         expiry_date: MoreThan(today)
       },
-      select: ["email"] // Only select the email field
+      select: ["email","ipaddress"] // Only select the email field
     });
-    if(emailOrders.length>0){
-      mails=emailOrders.map(order => order.email);
-    }
+    mails=emailOrders
     return mails
   }
+
   async saveUserQuery(data: userQueryDTO): Promise<any> {
     const userQuery= new UserQuery()
     userQuery.name=data.name!
@@ -273,9 +273,6 @@ export class UserService {
     userQuery.message=data.message!
     await userQuery.save()
   }
-  
-  
-  
 
 }
 

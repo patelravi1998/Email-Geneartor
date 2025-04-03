@@ -168,7 +168,8 @@ const orderSchema = Joi.object({
   email:Joi.string().required(),
   days:Joi.number().required(),
   amount:Joi.number().required(),
-  expiry_date:Joi.string().required()
+  expiry_date:Joi.string().required(),
+  ipaddress:Joi.string().required()
 });
 
 const signupSchema = Joi.object({

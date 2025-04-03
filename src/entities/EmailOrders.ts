@@ -15,6 +15,9 @@ import {
     @Column({ type: 'varchar' })
     email!: string;
 
+    @Column({ type: 'varchar' })
+    ipaddress!: string;
+
     @Column({ type: 'bigint', nullable: false })
     user_id!: bigint
 
