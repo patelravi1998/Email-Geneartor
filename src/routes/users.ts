@@ -15,6 +15,6 @@ router.post('/payment-webhook', UserController.savePaymentWebhook);
 router.get('/get_expiration_date', UserController.getExpirationDate); 
 router.post('/signup', UserController.userSignup);
 router.post('/login', UserController.userLogin);  
-router.get('/user_mails',[authMiddleware], UserController.getUserMails); 
+router.get('/user_purchased_mails',[authMiddleware], UserController.getUserMails); 
 router.post('/user_info', UserController.saveUserSupportQuery);  
 export default router;
