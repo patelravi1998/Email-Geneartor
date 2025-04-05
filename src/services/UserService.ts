@@ -258,7 +258,8 @@ export class UserService {
     const emailOrders = await EmailOrders.find({
       where: {
         user_id: userId,
-        expiry_date: MoreThan(today)
+        expiry_date: MoreThan(today),
+        payment_status:"paid"
       },
       select: ["email","ipaddress"] // Only select the email field
     });
