@@ -239,6 +239,22 @@ export class UserController {
       next(error);
     }
   }
+
+  async getPaymentStatus(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
+      const razorPayId: any = req.query.razorpay_order_id;
+
+      const response = await UserService.getPaymentStatusOfUserMail(userId,razorPayId);
+      res.sendSuccess(200,"User Mail FPayment Status Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
 }
 

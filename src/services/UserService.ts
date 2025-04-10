@@ -275,6 +275,14 @@ export class UserService {
     await userQuery.save()
   }
 
+  async getPaymentStatusOfUserMail(userId: any,razorPayId:any): Promise<any> {
+    const emailOrder = await EmailOrders.findOne({where:{user_id:userId,razorpay_order_id:razorPayId,payment_status:"paid"}})
+    if(emailOrder){
+      return true
+    }
+    return false
+  }
+
 }
 
 // Export a singleton instance if desired

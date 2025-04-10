@@ -17,4 +17,6 @@ router.post('/signup', UserController.userSignup);
 router.post('/login', UserController.userLogin);  
 router.get('/user_purchased_mails',[authMiddleware], UserController.getUserMails); 
 router.post('/user_info', UserController.saveUserSupportQuery);  
+router.get('/payment_status',[authMiddleware], UserController.getPaymentStatus); 
+
 export default router;
