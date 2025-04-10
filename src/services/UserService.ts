@@ -21,6 +21,7 @@ import {razorpay} from '../razorpay'; // path adjust karo accordingly
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import moment from 'moment'
+import { getRepository } from 'typeorm';
 
 
 
@@ -252,20 +253,39 @@ export class UserService {
     };
   }
 
+
+  
+
+  
   async getUserPurchasedMails(userId: any): Promise<any> {
-    let mails:any=[]
     const today = moment().format('YYYY-MM-DD');
-    const emailOrders = await EmailOrders.find({
-      where: {
-        user_id: userId,
-        expiry_date: MoreThan(today),
-        payment_status:"paid"
-      },
-      select: ["email","ipaddress"] // Only select the email field
+  
+    const emailOrders = await mySQl_dataSource!
+      .getRepository(EmailOrders)
+      .createQueryBuilder('eo')
+      .select(['eo.email', 'eo.ipaddress', 'eo.expiry_date']) // select only needed fields
+      .where('eo.user_id = :userId', { userId })
+      .andWhere('eo.expiry_date > :today', { today })
+      .andWhere('eo.payment_status = :status', { status: 'paid' })
+      .orderBy('eo.email', 'ASC')
+      .addOrderBy('eo.expiry_date', 'DESC')
+      .getMany();
+  
+    // Filter to get only the latest entry per email
+    const latestByEmail = new Map<string, any>();
+    emailOrders.forEach(order => {
+      if (!latestByEmail.has(order.email)) {
+        latestByEmail.set(order.email, {
+          email: order.email,
+          ipaddress: order.ipaddress,
+        });
+      }
     });
-    mails=emailOrders
-    return mails
+  
+    return Array.from(latestByEmail.values());
   }
+  
+  
 
   async saveUserQuery(data: userQueryDTO): Promise<any> {
     const userQuery= new UserQuery()
