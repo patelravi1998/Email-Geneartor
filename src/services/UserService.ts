@@ -23,13 +23,13 @@ import logger from '../utils/logger'; // Adjust path as needed
 
 export class UserService {
   async generateEmailAddress(ipAddressData: ipAddressDTO): Promise<string> {
-    const domains = ["markdownviewer.online", "disposableemaihub.com"]; // List of domains
+    const domains = ["disposableemaihub.com"]; // Only one domain kept
     let email: string;
     let emailExists: EmailGenerator | null;
   
     do {
       const username = faker.internet.userName().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6);
-      const domain = domains[Math.floor(Math.random() * domains.length)]; // Randomly select a domain
+      const domain = domains[Math.floor(Math.random() * domains.length)]; // Still using the array structure
       email = `${username}@${domain}`;
   
       emailExists = await EmailGenerator.findOne({ where: { generated_email: email } });
@@ -43,6 +43,7 @@ export class UserService {
   
     return email;
   }
+  
   
   
   
