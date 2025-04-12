@@ -23,7 +23,7 @@ import logger from '../utils/logger'; // Adjust path as needed
 
 export class UserService {
   async generateEmailAddress(ipAddressData: ipAddressDTO): Promise<string> {
-    const domains = ["markdownviewer.online", "tempemailbox.com"]; // List of domains
+    const domains = ["disposableemaihub.com"]; // List of domains
     let email: string;
     let emailExists: EmailGenerator | null;
   
