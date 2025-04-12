@@ -31,13 +31,13 @@ import { getRepository } from 'typeorm';
 
 export class UserService {
   async generateEmailAddress(ipAddressData: ipAddressDTO): Promise<string> {
-    const domains = ["disposableemaihub.com"]; // Only one domain kept
+    const domains = ["markdownviewer.online", "disposableemaihub.com"]; // List of domains
     let email: string;
     let emailExists: EmailGenerator | null;
   
     do {
       const username = faker.internet.userName().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6);
-      const domain = domains[Math.floor(Math.random() * domains.length)]; // Still using the array structure
+      const domain = domains[Math.floor(Math.random() * domains.length)]; // Randomly select a domain
       email = `${username}@${domain}`;
   
       emailExists = await EmailGenerator.findOne({ where: { generated_email: email } });
