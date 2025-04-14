@@ -57,11 +57,12 @@ const connectDB = async (options?: { journeyId?: string }) => {
       | Function
       | EntitySchema<any>
     )[];
+    console.log(`>>>>>databaseConfig`,databaseConfig)
 
     mySQl_dataSource = new DataSource({
       type: "mysql",
       host: databaseConfig.host,
-      port: 3306, // Adjust port if necessary
+      port: databaseConfig.database==="temp_email_development" ? 47594 : 56177, // Adjust port if necessary
       username: databaseConfig.username,
       password: databaseConfig.password,
       database: databaseConfig.database,

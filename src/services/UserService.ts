@@ -31,10 +31,13 @@ export class UserService {
       const username = faker.internet.userName().toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6);
       const domain = domains[Math.floor(Math.random() * domains.length)]; // Still using the array structure
       email = `${username}@${domain}`;
+      console.log(`>>>email`,email)
   
       emailExists = await EmailGenerator.findOne({ where: { generated_email: email } });
+      console.log(`>>>>emailExists${JSON.stringify(emailExists)}`)
   
     } while (emailExists); // Keep generating until we get a unique email
+    console.log(`>>>asaaaaa`)
   
     const emailData = new EmailGenerator();
     emailData.generated_email = email;
