@@ -75,8 +75,8 @@ export class UserService {
     emailData.body = cleanedHtml || receivedEmaildata.text || '';
   
     // Save attachments if they exist
-    if (attachmentData) {
-      emailData.attachments = JSON.stringify(attachmentData); // Save as JSON string
+    if (attachmentData && attachmentData.length > 0) {
+      emailData.attachments = JSON.stringify(attachmentData);
     }
   
     await emailData.save();
