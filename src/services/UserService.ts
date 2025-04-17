@@ -20,10 +20,21 @@ import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
   filename?: string;
-  content?: string; // Base64 encoded content
+  content?: string;  // Base64 encoded content
   contentType?: string;
   size?: number;
 }
+
+interface ReceivedEmailData {
+  to: string[];
+  from: string;
+  subject: string;
+  text?: string;
+  html?: string;
+  date: Date;
+}
+
+
 
 
 export class UserService {
@@ -57,42 +68,57 @@ export class UserService {
   
 
   
-  async receiveMail(receivedEmaildata: any, attachmentData: Attachment[]): Promise<any> {
-      if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
-        throw new ApiError(400, 400, "Invalid Mail");
-      }
-      const recipient = receivedEmaildata.to[0];
+
+  
+  async receiveMail(
+    receivedEmaildata: ReceivedEmailData,
+    attachmentData: Attachment[]
+  ): Promise<EmailResponse> {
+    if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
+      throw new ApiError(400, 400, "Invalid Mail");
+    }
+  
+    const recipient = receivedEmaildata.to[0];
+    const existingMail = await EmailGenerator.findOne({ 
+      where: { generated_email: recipient } 
+    });
+  
+    if (!existingMail) {
+      throw new ApiError(400, 400, "Recipient Mail Not Found");
+    }
+  
+    // Clean HTML if present
+    const cleanedHtml = receivedEmaildata.html 
+      ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') 
+      : "";
+  
+    const emailData = new EmailResponse();
+    emailData.generated_email = recipient;
+    emailData.ipaddress = existingMail.ipaddress;
+    emailData.date = receivedEmaildata.date.toString();
+    emailData.sender_email = receivedEmaildata.from;
+    emailData.sender_name = receivedEmaildata.from;
+    emailData.subject = receivedEmaildata.subject;
+    emailData.body = cleanedHtml || receivedEmaildata.text || '';
     
-      const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
-      if (!existingMail) {
-        throw new ApiError(400, 400, "Recipient Mail Not Found");
-      }
-    
-      logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
-    
-      const cleanedHtml = receivedEmaildata.html ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') : "";
-    
-      const emailData = new EmailResponse();
-      emailData.generated_email = recipient;
-      emailData.ipaddress = existingMail.ipaddress;
-      emailData.date = receivedEmaildata.date;
-      emailData.sender_email = receivedEmaildata.from;
-      emailData.sender_name = receivedEmaildata.from;
-      emailData.subject = receivedEmaildata.subject;
-      emailData.body = cleanedHtml || receivedEmaildata.text || '';
-      
-      // Save only attachments with content
-      if (attachmentData && attachmentData.length > 0) {
-        const validAttachments = attachmentData.filter((att: Attachment) => 
-          att.content && att.content.length > 0
-        );
-        if (validAttachments.length > 0) {
-          emailData.attachments = JSON.stringify(validAttachments);
+    // Only store attachments with valid content
+    if (attachmentData && attachmentData.length > 0) {
+      const validAttachments = attachmentData.filter((a: Attachment) => {
+        const isValid = a.content && a.content.length > 0;
+        if (!isValid) {
+          logger.warn(`Skipping invalid attachment: ${a.filename}`);
         }
+        return isValid;
+      });
+  
+      if (validAttachments.length > 0) {
+        emailData.attachments = JSON.stringify(validAttachments);
+        logger.info(`Stored ${validAttachments.length} attachments`);
       }
-    
-      await emailData.save();
-      return emailData;
+    }
+  
+    await emailData.save();
+    return emailData;
   }
 
   async getUserMails(ipAddress: string, temporaryEmail: string): Promise<any> {
