@@ -40,21 +40,28 @@ export class UserController {
 
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(`Request Node Environment : ${process.env.NODE_ENV}`);
-      logger.info(`Request Body Of Receive Email : ${JSON.stringify(req.body)}`);
+      logger.info(`Request Body Of Receive Email: ${JSON.stringify({
+        ...req.body,
+        attachments: req.body.attachments?.map((a: any) => ({
+          filename: a.filename,
+          size: a.size,
+          hasContent: !!a.content
+        }))
+      })}`);
   
-      const receivedEmaildata = req.body;
-      console.log(`>>>>>body`, req.body);
-      
-      // Process attachments from the request body
-      const attachmentData = (receivedEmaildata.attachments || []).map((a: any) => ({
-        filename: a.filename,
-        content: a.content, // This now contains the base64 content
-        contentType: a.contentType,
-        size: a.size
-      }));
+      const attachmentData = (req.body.attachments || []).map((a: any) => {
+        if (!a.content) {
+          logger.error(`Attachment ${a.filename} has no content!`);
+        }
+        return {
+          filename: a.filename,
+          content: a.content || '', // Ensure content exists even if empty
+          contentType: a.contentType,
+          size: a.size
+        };
+      });
   
-      const emailData = await UserService.receiveMail(receivedEmaildata, attachmentData);
+      const emailData = await UserService.receiveMail(req.body, attachmentData);
       res.sendSuccess(200, "Email Received Successfully");
     } catch (error) {
       next(error);
