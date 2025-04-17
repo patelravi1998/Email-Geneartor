@@ -50,12 +50,12 @@ export class UserService {
   
   
   
-  async receiveMail(receivedEmaildata: any,attachmentData:any): Promise<any> {
+  async receiveMail(receivedEmaildata: any, attachmentData: any): Promise<any> {
     if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
       throw new ApiError(400, 400, "Invalid Mail");
     }
     const recipient = receivedEmaildata.to[0];
-
+  
     const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
       throw new ApiError(400, 400, "Recipient Mail Not Found");
@@ -64,7 +64,7 @@ export class UserService {
     logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
   
     const cleanedHtml = receivedEmaildata.html ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') : "";
-
+  
     const emailData = new EmailResponse();
     emailData.generated_email = recipient;
     emailData.ipaddress = existingMail.ipaddress;
@@ -73,8 +73,8 @@ export class UserService {
     emailData.sender_name = receivedEmaildata.from;
     emailData.subject = receivedEmaildata.subject;
     emailData.body = cleanedHtml || receivedEmaildata.text || '';
-  
-    // Save attachments if they exist
+    
+    // Save attachments with content
     if (attachmentData && attachmentData.length > 0) {
       emailData.attachments = JSON.stringify(attachmentData);
     }
