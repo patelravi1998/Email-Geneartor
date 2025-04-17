@@ -47,44 +47,35 @@ export class UserController {
   
 
   
- async receiveEmail(req: Request, res: Response, next: NextFunction) : Promise<any> {
+  async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      // Log incoming request (without full attachment content)
-      logger.info(`Received email from: ${req.body.from} with subject: ${req.body.subject}`);
-      
-      const attachmentData = (req.body.attachments || []).map((a: any) => {
-        // Validate base64 content
-        if (!a.content || !/^[A-Za-z0-9+/=]+$/.test(a.content)) {
-          logger.warn(`Invalid base64 content for attachment: ${a.filename}`);
-          return null;
-        }
-        
-        try {
-          const buffer = Buffer.from(a.content, 'base64');
-          return {
-            filename: a.filename || 'unnamed-file',
-            content: a.content,
-            contentType: a.contentType || 'application/octet-stream',
-            size: buffer.length
-          };
-        } catch (err) {
-          logger.error(`Error processing attachment ${a.filename}:`, err);
-          return null;
-        }
-      }).filter((a: Attachment | null): a is Attachment => a !== null);
-  
-      logger.info(`Processing ${attachmentData.length} valid attachments`);
-  
-      const emailData = await UserService.receiveMail(req.body, attachmentData);
-      res.status(200).json({
-        success: true,
-        message: "Email Received Successfully",
-        data: emailData
-      });
-    } catch (error) {
-      next(error);
+    logger.info(`Request Body Of Receive Email: ${JSON.stringify({
+    ...req.body,
+    attachments: req.body.attachments?.map((a: any) => ({
+    filename: a.filename,
+    size: a.size,
+    hasContent: !!a.content
+    }))
+    })}`);
+    
+    const attachmentData = (req.body.attachments || []).map((a: any) => {
+    if (!a.content) {
+    logger.error(`Attachment ${a.filename} has no content!`);
     }
-  };
+    return {
+    filename: a.filename,
+    content: a.content || '', // Ensure content exists even if empty
+    contentType: a.contentType,
+    size: a.size
+    };
+    });
+    
+    const emailData = await UserService.receiveMail(req.body, attachmentData);
+    res.sendSuccess(200, "Email Received Successfully");
+    } catch (error) {
+    next(error);
+    }
+  }
 
   async getReceipientMails(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {

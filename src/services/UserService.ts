@@ -70,53 +70,40 @@ export class UserService {
   
 
   
-  async receiveMail(
-    receivedEmaildata: ReceivedEmailData,
-    attachmentData: Attachment[]
-  ): Promise<EmailResponse> {
+  async receiveMail(receivedEmaildata: any, attachmentData: Attachment[]): Promise<any> {
     if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
-      throw new ApiError(400, 400, "Invalid Mail");
+    throw new ApiError(400, 400, "Invalid Mail");
     }
-  
     const recipient = receivedEmaildata.to[0];
-    const existingMail = await EmailGenerator.findOne({ 
-      where: { generated_email: recipient } 
-    });
-  
+    
+    const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
-      throw new ApiError(400, 400, "Recipient Mail Not Found");
+    throw new ApiError(400, 400, "Recipient Mail Not Found");
     }
-  
-    // Clean HTML if present
-    const cleanedHtml = receivedEmaildata.html 
-      ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') 
-      : "";
-  
+    
+    logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
+    
+    const cleanedHtml = receivedEmaildata.html ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') : "";
+    
     const emailData = new EmailResponse();
     emailData.generated_email = recipient;
     emailData.ipaddress = existingMail.ipaddress;
-    emailData.date = receivedEmaildata.date.toString();
+    emailData.date = receivedEmaildata.date;
     emailData.sender_email = receivedEmaildata.from;
     emailData.sender_name = receivedEmaildata.from;
     emailData.subject = receivedEmaildata.subject;
     emailData.body = cleanedHtml || receivedEmaildata.text || '';
     
-    // Only store attachments with valid content
+    // Save only attachments with content
     if (attachmentData && attachmentData.length > 0) {
-      const validAttachments = attachmentData.filter((a: Attachment) => {
-        const isValid = a.content && a.content.length > 0;
-        if (!isValid) {
-          logger.warn(`Skipping invalid attachment: ${a.filename}`);
-        }
-        return isValid;
-      });
-  
-      if (validAttachments.length > 0) {
-        emailData.attachments = JSON.stringify(validAttachments);
-        logger.info(`Stored ${validAttachments.length} attachments`);
-      }
+    const validAttachments = attachmentData.filter((att: Attachment) =>
+    att.content && att.content.length > 0
+    );
+    if (validAttachments.length > 0) {
+    emailData.attachments = JSON.stringify(validAttachments);
     }
-  
+    }
+    
     await emailData.save();
     return emailData;
   }
