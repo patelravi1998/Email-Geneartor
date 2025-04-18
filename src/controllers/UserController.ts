@@ -56,9 +56,9 @@ export class UserController {
         `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
       );    
     const attachmentData = (req.body.attachments || []).map((a: any) => {
-    if (!a.content) {
-    logger.error(`Attachment ${a.filename} has no content!`);
-    }
+    // if (!a.content) {
+    // logger.error(`Attachment ${a.filename} has no content!`);
+    // }
     return {
     filename: a.filename,
     content: a.content || '', // Ensure content exists even if empty
