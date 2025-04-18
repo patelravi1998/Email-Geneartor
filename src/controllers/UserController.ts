@@ -49,28 +49,33 @@ export class UserController {
   
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
-      );    
-    const attachmentData = (req.body.attachments || []).map((a: any) => {
-    // if (!a.content) {
-    // logger.error(`Attachment ${a.filename} has no content!`);
-    // }
-    return {
-    filename: a.filename,
-    content: a.content || '', // Ensure content exists even if empty
-    contentType: a.contentType,
-    size: a.size
-    };
-    });
-    
-    const emailData = await UserService.receiveMail(req.body, attachmentData);
-    res.sendSuccess(200, "Email Received Successfully");
+      logger.info(`Request Node Environment: ${process.env.NODE_ENV}`);
+      logger.info(`Request Body Of Receive Email: ${JSON.stringify({
+        ...req.body,
+        attachments: req.body.attachments ? req.body.attachments.map((a: any) => ({
+          ...a,
+          content: a.content ? '[BASE64_DATA]' : 'MISSING' // Don't log full content
+        })) : []
+      })}`);
+  
+      // Validate attachments have content
+      const attachmentData = (req.body.attachments || []).map((a: any) => {
+        if (!a.content) {
+          logger.error(`Attachment ${a.filename} has no content!`);
+          throw new ApiError(400, 400, `Attachment ${a.filename} has no content`);
+        }
+        return {
+          filename: a.filename,
+          content: a.content,
+          contentType: a.contentType,
+          size: a.size
+        };
+      });
+  
+      const emailData = await UserService.receiveMail(req.body, attachmentData);
+      res.sendSuccess(200, "Email Received Successfully");
     } catch (error) {
-    next(error);
+      next(error);
     }
   }
 
