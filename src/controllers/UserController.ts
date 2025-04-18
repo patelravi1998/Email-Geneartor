@@ -49,15 +49,12 @@ export class UserController {
   
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-    logger.info(`Request Body Of Receive Email: ${JSON.stringify({
-    ...req.body,
-    attachments: req.body.attachments?.map((a: any) => ({
-    filename: a.filename,
-    size: a.size,
-    hasContent: !!a.content
-    }))
-    })}`);
-    
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
+      );    
     const attachmentData = (req.body.attachments || []).map((a: any) => {
     if (!a.content) {
     logger.error(`Attachment ${a.filename} has no content!`);
