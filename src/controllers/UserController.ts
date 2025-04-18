@@ -7,7 +7,12 @@ import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQ
 import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
-
+interface Attachment {
+  filename: string;
+  content: string;
+  contentType: string;
+  size: number;
+}
 
 
 export class UserController {
@@ -38,39 +43,34 @@ export class UserController {
     }
   }
 
+
+  
+
+  
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(`Request Node Environment : ${process.env.NODE_ENV}`);
-      logger.info(`Request Body Of Receive Email : ${JSON.stringify(req.body)}`);
-  
-      // Check if there are any files (attachments) in the request
-      // let attachmentData
-
-      // if (Array.isArray(req.files) && req.files.length > 0) {
-      //   logger.info(`Attachments Received: ${JSON.stringify(req.files)}`);
-  
-      //   // Process each attachment
-      //   for (const file of req.files) {
-      //      attachmentData = {
-      //       filename: file.originalname,
-      //       content: file.buffer.toString('base64'), // Convert file buffer to base64
-      //       contentType: file.mimetype,
-      //       size: file.size,
-      //     };
-  
-      //     // Save the attachment data to the database or process it as needed
-      //   }
-      // }
-  
-      const receivedEmaildata = req.body;
-      console.log(`>>>>>body`, req.body);
-      const attachmentData = receivedEmaildata.attachments || [];
-
-  
-      const emailData = await UserService.receiveMail(receivedEmaildata,attachmentData);
-      res.sendSuccess(200, "Email Received Successfully");
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
+      );    
+    const attachmentData = (req.body.attachments || []).map((a: any) => {
+    // if (!a.content) {
+    // logger.error(`Attachment ${a.filename} has no content!`);
+    // }
+    return {
+    filename: a.filename,
+    content: a.content || '', // Ensure content exists even if empty
+    contentType: a.contentType,
+    size: a.size
+    };
+    });
+    
+    const emailData = await UserService.receiveMail(req.body, attachmentData);
+    res.sendSuccess(200, "Email Received Successfully");
     } catch (error) {
-      next(error);
+    next(error);
     }
   }
 

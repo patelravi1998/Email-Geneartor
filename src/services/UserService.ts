@@ -26,6 +26,22 @@ import { getRepository } from 'typeorm';
 
 
 
+interface Attachment {
+  filename?: string;
+  content?: string;  // Base64 encoded content
+  contentType?: string;
+  size?: number;
+}
+
+interface ReceivedEmailData {
+  to: string[];
+  from: string;
+  subject: string;
+  text?: string;
+  html?: string;
+  date: Date;
+}
+
 
 
 
@@ -58,21 +74,25 @@ export class UserService {
   
   
   
-  async receiveMail(receivedEmaildata: any,attachmentData:any): Promise<any> {
+
+  
+
+  
+  async receiveMail(receivedEmaildata: any, attachmentData: Attachment[]): Promise<any> {
     if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
-      throw new ApiError(400, 400, "Invalid Mail");
+    throw new ApiError(400, 400, "Invalid Mail");
     }
     const recipient = receivedEmaildata.to[0];
-
+    
     const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
-      throw new ApiError(400, 400, "Recipient Mail Not Found");
+    throw new ApiError(400, 400, "Recipient Mail Not Found");
     }
-  
+    
     logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
-  
+    
     const cleanedHtml = receivedEmaildata.html ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') : "";
-
+    
     const emailData = new EmailResponse();
     emailData.generated_email = recipient;
     emailData.ipaddress = existingMail.ipaddress;
@@ -81,12 +101,17 @@ export class UserService {
     emailData.sender_name = receivedEmaildata.from;
     emailData.subject = receivedEmaildata.subject;
     emailData.body = cleanedHtml || receivedEmaildata.text || '';
-  
-    // Save attachments if they exist
+    
+    // Save only attachments with content
     if (attachmentData && attachmentData.length > 0) {
-      emailData.attachments = JSON.stringify(attachmentData);
+    const validAttachments = attachmentData.filter((att: Attachment) =>
+    att.content && att.content.length > 0
+    );
+    if (validAttachments.length > 0) {
+    emailData.attachments = JSON.stringify(validAttachments);
     }
-  
+    }
+    
     await emailData.save();
     return emailData;
   }
