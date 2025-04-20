@@ -20,6 +20,9 @@ import {
   
     @Column({ type: 'tinyint', default: 1 })
     status?: number;
+
+    @Column({ type: 'date', nullable: true })
+    expiration_date?: string;
   
     @CreateDateColumn({ type: 'datetime' })
     created_at!: Date;

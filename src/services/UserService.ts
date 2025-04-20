@@ -58,6 +58,9 @@ export class UserService {
     const emailData = new EmailGenerator();
     emailData.generated_email = email;
     emailData.ipaddress = ipAddressData.ipadress!;
+    const today = new Date();
+    const expirationDate = new Date(today.getTime() + 7 * 86400000); // 7 days later
+    emailData.expiration_date = expirationDate.toISOString().split('T')[0]; 
     await emailData.save();
   
     return email;
@@ -78,7 +81,12 @@ export class UserService {
     
     const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
-    throw new ApiError(400, 400, "Recipient Mail Not Found");
+      throw new ApiError(400, 400, "Recipient Mail Not Found");
+    }
+    const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+    console.log(`>>>>>today`,today)
+    if (today > existingMail.expiration_date!) {
+      throw new ApiError(400, 400,"This email has already expired. Please generate a new one.");
     }
     
     logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
