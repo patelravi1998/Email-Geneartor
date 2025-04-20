@@ -86,6 +86,8 @@ export class UserService {
     
     const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
+      logger.info(`Recipient Mail Not Found: ${JSON.stringify(existingMail)}`);
+
     throw new ApiError(400, 400, "Recipient Mail Not Found");
     }
     
