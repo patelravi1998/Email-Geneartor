@@ -79,6 +79,9 @@ export class UserService {
 
   
   async receiveMail(receivedEmaildata: any, attachmentData: Attachment[]): Promise<any> {
+    logger.info(
+      `Request Body Of  Receive Email Service Logic : ${JSON.stringify(receivedEmaildata)}`
+    );   
     if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
     throw new ApiError(400, 400, "Invalid Mail");
     }
