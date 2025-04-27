@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import dotenv from "dotenv";
-import logger from '../utils/logger';
+// import logger from '../utils/logger';
 import { ApiError } from './errors';
 dotenv.config();
 

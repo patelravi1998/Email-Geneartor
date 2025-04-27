@@ -5,7 +5,7 @@ import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
 import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO} from '../dtos/user/UserDTO';
 import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
-import logger from '../utils/logger'; // Adjust path as needed
+// import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
   filename: string;
@@ -22,17 +22,17 @@ export class UserController {
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);
       }
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Generate Email : ${JSON.stringify(req.body)}`
-      );
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Generate Email : ${JSON.stringify(req.body)}`
+      // );
       const ipAddress: ipAddressDTO = data;
       const response = await UserService.generateEmailAddress(ipAddress);
-      logger.info(
-        `Response  Of  Generate Email Api: ${JSON.stringify(response)}`
-      );
+      // logger.info(
+      //   `Response  Of  Generate Email Api: ${JSON.stringify(response)}`
+      // );
       if (response) {
         res.sendSuccess(200,"Email Generated Successfully",response);
       } else {
@@ -49,12 +49,12 @@ export class UserController {
   
   async receiveEmail(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
-      );    
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Receive Email : ${JSON.stringify(req.body)}`
+      // );    
     const attachmentData = (req.body.attachments || []).map((a: any) => {
     // if (!a.content) {
     // logger.error(`Attachment ${a.filename} has no content!`);
@@ -112,12 +112,12 @@ export class UserController {
 
   async createOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Create Order : ${JSON.stringify(req.body)}`
-      );
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Create Order : ${JSON.stringify(req.body)}`
+      // );
       if (!req.user || !req.user.id) {
         throw new ApiError(400, 400, "User not authenticated");
       }
@@ -140,12 +140,12 @@ export class UserController {
   
   async savePaymentWebhook(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Payment Webhook : ${JSON.stringify(req.body)}`
-      );
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Payment Webhook : ${JSON.stringify(req.body)}`
+      // );
       const signature = req.headers['x-razorpay-signature'] as string;
 
       const response = await UserService.savePaymentStatus(req.body,signature);
@@ -174,12 +174,12 @@ export class UserController {
   
   async userSignup(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
-      );
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      // );
       const { error, value: data } = signupSchema.validate(req.body);
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);
@@ -195,12 +195,12 @@ export class UserController {
 
   async userLogin(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
-      logger.info(
-        `Request Node Environment : ${process.env.NODE_ENV}`
-      );
-      logger.info(
-        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
-      );
+      // logger.info(
+      //   `Request Node Environment : ${process.env.NODE_ENV}`
+      // );
+      // logger.info(
+      //   `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      // );
       const { error, value: data } = signupSchema.validate(req.body);
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);

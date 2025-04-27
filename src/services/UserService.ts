@@ -15,7 +15,7 @@ import {
 } from "../dtos/user/UserDTO";
 import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
-import logger from '../utils/logger'; // Adjust path as needed
+// import logger from '../utils/logger'; // Adjust path as needed
 import crypto from 'crypto';
 import {razorpay} from '../razorpay'; // path adjust karo accordingly
 import bcrypt from "bcrypt";
@@ -82,9 +82,9 @@ export class UserService {
 
   
   async receiveMail(receivedEmaildata: any, attachmentData: Attachment[]): Promise<any> {
-    logger.info(
-      `Request Body Of  Receive Email Service Logic : ${JSON.stringify(receivedEmaildata)}`
-    );   
+    // logger.info(
+    //   `Request Body Of  Receive Email Service Logic : ${JSON.stringify(receivedEmaildata)}`
+    // );   
     if (!receivedEmaildata.to || receivedEmaildata.to.length === 0) {
     throw new ApiError(400, 400, "Invalid Mail");
     }
@@ -92,7 +92,7 @@ export class UserService {
     
     const existingMail = await EmailGenerator.findOne({ where: { generated_email: recipient } });
     if (!existingMail) {
-      logger.info(`Recipient Mail Not Found: ${JSON.stringify(existingMail)}`);
+      // logger.info(`Recipient Mail Not Found: ${JSON.stringify(existingMail)}`);
       throw new ApiError(400, 400, "Recipient Mail Not Found");
     }
     const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
@@ -101,7 +101,7 @@ export class UserService {
       throw new ApiError(400, 400,"This email has already expired. Please generate a new one.");
     }
     
-    logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
+    // logger.info(`Request Body In Service : ${JSON.stringify(receivedEmaildata)}`);
     
     const cleanedHtml = receivedEmaildata.html ? receivedEmaildata.html.replace(/[\r\n\t]/g, '') : "";
     
@@ -191,12 +191,12 @@ export class UserService {
   }
   
   async savePaymentStatus(data: any, signature: any): Promise<any> {
-    logger.info(`Request Node Environment service: ${process.env.NODE_ENV}`);
-    logger.info(`Request Body Of Payment Webhook service: ${JSON.stringify(data)}`);
+    // logger.info(`Request Node Environment service: ${process.env.NODE_ENV}`);
+    // logger.info(`Request Body Of Payment Webhook service: ${JSON.stringify(data)}`);
 
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
-    logger.info(`Webhook Secret: ${webhookSecret}`);
-    logger.info(`Received Signature: ${signature}`);
+    // logger.info(`Webhook Secret: ${webhookSecret}`);
+    // logger.info(`Received Signature: ${signature}`);
 
     // ✅ Ensure `data` is a string before hashing
     const expectedSignature = crypto
@@ -204,15 +204,15 @@ export class UserService {
         .update(JSON.stringify(data)) // Convert to string
         .digest("hex");
 
-    logger.info(`Expected Signature: ${expectedSignature}`);
+    // logger.info(`Expected Signature: ${expectedSignature}`);
 
     // Verify Signature
     if (expectedSignature !== signature) {
-        logger.error(`Invalid Signature`);
+        // logger.error(`Invalid Signature`);
         throw new ApiError(500, 500, "Invalid Signature");
     }
 
-    logger.info(`Signature Verified Successfully`);
+    // logger.info(`Signature Verified Successfully`);
 
     // const response = JSON.parse(data.toString());
 
@@ -222,20 +222,20 @@ export class UserService {
     const razorpay_order_id = data.payload.payment.entity.order_id
 
     if (!razorpay_order_id) {
-        logger.error(`Missing order_id in payment webhook`);
+        // logger.error(`Missing order_id in payment webhook`);
         throw new ApiError(500, 500, "Missing order_id");
     }
 
     const order = await EmailOrders.findOne({ where: { razorpay_order_id:razorpay_order_id } });
     if (!order) {
-        logger.error(`Order Not Found For Order Id: ${razorpay_order_id}`);
+        // logger.error(`Order Not Found For Order Id: ${razorpay_order_id}`);
         throw new ApiError(500, 500, "Order not found");
     }
 
     order.payment_status = "paid";
     await order.save();
 
-    logger.info(`Order ${razorpay_order_id} marked as PAID successfully`);
+    // logger.info(`Order ${razorpay_order_id} marked as PAID successfully`);
   }
 
   async getExpirationDateForMail(temporaryEmail: string): Promise<any> {

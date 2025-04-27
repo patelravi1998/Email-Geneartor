@@ -1,5 +1,5 @@
 import { DataSource, EntitySchema } from "typeorm";
-import logger from "../utils/logger";
+// import logger from "../utils/logger";
 import { env_variables } from "./env";
 import * as Entities from "../entities";
 
@@ -48,10 +48,10 @@ const connectDB = async (options?: { journeyId?: string }) => {
       );
     }
     // Log database connection attempt with journeyId
-    logger.info(
-      `[${journeyId || "Unknown"}] Attempting to connect to MySQL...`
-    );
-    logger.info(JSON.stringify(databaseConfig));
+    // logger.info(
+    //   `[${journeyId || "Unknown"}] Attempting to connect to MySQL...`
+    // );
+    // logger.info(JSON.stringify(databaseConfig));
     const entities = Object.values(Entities) as (
       | string
       | Function
@@ -81,18 +81,18 @@ const connectDB = async (options?: { journeyId?: string }) => {
     console.log("MySQL connected successfully");
 
     // Log successful connection with journeyId
-    logger.info(`[${journeyId || "Unknown"}] MySQL connected`);
+    // logger.info(`[${journeyId || "Unknown"}] MySQL connected`);
 
     return mySQl_dataSource;
   } catch (err) {
     // Log connection error with journeyId
     console.log(err);
 
-    logger.error(
-      `[${journeyId || "Unknown"}] MySQL connection error: ${
-        (err as Error).message
-      }`
-    );
+    // logger.error(
+    //   `[${journeyId || "Unknown"}] MySQL connection error: ${
+    //     (err as Error).message
+    //   }`
+    // );
     process.exit(1); // Exit process on connection error
   }
 };

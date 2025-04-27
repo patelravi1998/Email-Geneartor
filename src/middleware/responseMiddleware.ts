@@ -1,6 +1,6 @@
 // responseMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
-import logger from '../utils/logger';
+// import logger from '../utils/logger';
 
 const responseMiddleware = (
   req: Request,
@@ -12,7 +12,7 @@ const responseMiddleware = (
   };
 
   res.sendError = (status: number,statusCode:number = status, message: string, data?: any) => {
-    logger.info(JSON.stringify(data));
+    // logger.info(JSON.stringify(data));
     res.status(status).json({
       status: false,
       error: {

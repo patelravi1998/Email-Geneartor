@@ -1,7 +1,7 @@
 // src/middleware/errorHandler.ts
 
 import { Request, Response, NextFunction } from 'express';
-import logger from '../utils/logger'; // Import Winston logger
+// import logger from '../utils/logger'; // Import Winston logger
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for generating journeyId
 import { ApiError } from './errors';
 
@@ -14,10 +14,10 @@ export const errorHandler = (
 ) => {
   const journeyId = req.journeyId || uuidv4(); // Generate journeyId if not already present
 
-  logger.error(`[${journeyId}] Error occurred: ${error.message}`); // Log the error with journeyId
+  // logger.error(`[${journeyId}] Error occurred: ${error.message}`); // Log the error with journeyId
 
   // Log the stack trace for debugging purposes
-  logger.debug(`[${journeyId}] Error stack trace: ${error.stack}`);
+  // logger.debug(`[${journeyId}] Error stack trace: ${error.stack}`);
 
   // Customize error response based on the type of error or status code
   // const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
