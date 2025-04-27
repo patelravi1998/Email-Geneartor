@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,userQueryDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
@@ -110,6 +110,124 @@ export class UserController {
     }
   }
 
+  async createOrder(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Create Order : ${JSON.stringify(req.body)}`
+      );
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
+      const { error, value: data } = orderSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const order: orderDTO = data;
+      const response = await UserService.createOrderDetails(order,userId);
+      if (response) {
+        res.sendSuccess(200,"Order Created Successfully",response);
+      } else {
+        throw new ApiError(400, 400, 'Failed to Create Order');
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async savePaymentWebhook(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Payment Webhook : ${JSON.stringify(req.body)}`
+      );
+      const signature = req.headers['x-razorpay-signature'] as string;
+
+      const response = await UserService.savePaymentStatus(req.body,signature);
+      if (response) {
+        res.sendSuccess(200,"Payment Status Saved Successfully",response);
+      } else {
+        throw new ApiError(400, 400, 'Failed to Save Payment Status');
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async getExpirationDate(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const temporaryEmail: any = req.query.temporaryEmail;
+
+      
+      console.log(`>>>>temporaryEmail`,temporaryEmail)
+      const emailData = await UserService.getExpirationDateForMail(temporaryEmail);
+      res.sendSuccess(200,"Email Fetched Successfully",emailData);
+    } catch (error) {
+       next(error);
+    }
+  }
+  
+  async userSignup(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      );
+      const { error, value: data } = signupSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const registerData: signupDTO = data;
+      
+      const result = await UserService.userRegistration(registerData);
+      res.sendSuccess(200,"User Registered Successfully",result);
+    } catch (error) {
+       next(error);
+    }
+  }
+
+  async userLogin(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      logger.info(
+        `Request Node Environment : ${process.env.NODE_ENV}`
+      );
+      logger.info(
+        `Request Body Of  Signup : ${JSON.stringify(req.body)}`
+      );
+      const { error, value: data } = signupSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const registerData: signupDTO = data;
+      
+      const result = await UserService.userLoginProcess(registerData);
+      res.sendSuccess(200,"User SignIn  Successfully",result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  
+  async getUserMails(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
+      const response = await UserService.getUserPurchasedMails(userId);
+      res.sendSuccess(200,"User Mail Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async saveUserSupportQuery(req: Request, res: Response, next: NextFunction): Promise<any> {
     try {
       const { error, value: data } = userQuerySchema.validate(req.body);
@@ -123,6 +241,22 @@ export class UserController {
       next(error);
     }
   }
+
+  async getPaymentStatus(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      if (!req.user || !req.user.id) {
+        throw new ApiError(400, 400, "User not authenticated");
+      }
+      const userId = req?.user?.id;
+      const razorPayId: any = req.query.razorpay_order_id;
+
+      const response = await UserService.getPaymentStatusOfUserMail(userId,razorPayId);
+      res.sendSuccess(200,"User Mail FPayment Status Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
 }
 

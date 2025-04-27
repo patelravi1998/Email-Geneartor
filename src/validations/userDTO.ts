@@ -163,4 +163,17 @@ const emailSchema = Joi.object({
   Date: Joi.string().required(),
   "body-html": Joi.string().required(), // Enclosed in quotes
 });
-export { ipAddressSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema}
+
+const orderSchema = Joi.object({
+  email:Joi.string().required(),
+  days:Joi.number().required(),
+  amount:Joi.number().required(),
+  expiry_date:Joi.string().required(),
+  ipaddress:Joi.string().required()
+});
+
+const signupSchema = Joi.object({
+  email:Joi.string().required(),
+  password:Joi.string().required()
+});
+export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema}

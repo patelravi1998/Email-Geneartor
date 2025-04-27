@@ -86,6 +86,10 @@ export class  mailDTO {
   mail?: string;
 }
 
+export class  signupDTO {
+  email?: string;
+  password?: string;
+}
 export class  userQueryDTO {
   email?: string;
   name?: string;
@@ -98,4 +102,12 @@ export class EmailDTO {
   subject?: string;
   Date?: string;
   ["body-html"]?: string;
+}
+
+export class  orderDTO {
+  email?: string;
+  days?: number;
+  amount?: number;
+  expiry_date?: string;
+  ipaddress?:string;
 }
