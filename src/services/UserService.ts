@@ -234,6 +234,11 @@ export class UserService {
 
     order.payment_status = "paid";
     await order.save();
+    const emailData = await EmailGenerator.findOne({ where: { generated_email: order.email } });
+    if(emailData){
+      emailData.expiration_date=order.expiry_date
+      await emailData.save()
+    }
 
     logger.info(`Order ${razorpay_order_id} marked as PAID successfully`);
   }
