@@ -66,9 +66,9 @@ if (process.env.CLOUDWATCH_LOGGING_ENABLED === 'true') {
     awsRegion: process.env.AWS_REGION || 'us-east-1'
   };
 
-  transports.push(
-    new WinstonCloudWatch(cloudWatchLogsOptions)
-  );
+  // transports.push(
+  //   new WinstonCloudWatch(cloudWatchLogsOptions)
+  // );
 }
 
 // Create Winston logger instance
