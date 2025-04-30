@@ -380,14 +380,37 @@ export class UserService {
       },
     });
 
+    // const mailOptions = {
+    //   to: user.email,
+    //   from: process.env.EMAIL_USERNAME,
+    //   subject: 'Password Reset',
+    //   text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+    //     Please click on the following link, or paste this into your browser to complete the process:\n\n
+    //     ${resetUrl}\n\n
+    //     If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    // };
+
     const mailOptions = {
       to: user.email,
-      from: process.env.EMAIL_USERNAME,
-      subject: 'Password Reset',
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
-        ${resetUrl}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+      from: `disposableemailhub ${process.env.EMAIL_USERNAME}`,
+      subject: 'Password Reset Request',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Password Reset Request</h2>
+          <p>You recently requested to reset your password for Your App Name.</p>
+          <p>Please click the button below to reset your password:</p>
+          <a href="${resetUrl}" 
+             style="background-color: #2563eb; color: white; padding: 10px 20px; 
+                    text-decoration: none; border-radius: 5px; display: inline-block;">
+             Reset Password
+          </a>
+          <p>If you didn't request this, please ignore this email.</p>
+          <p style="font-size: 0.8em; color: #6b7280;">
+            This link will expire in 1 hour.
+          </p>
+        </div>
+      `,
+      text: `Password Reset Link: ${resetUrl}`
     };
 
     await transporter.sendMail(mailOptions);
