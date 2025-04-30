@@ -356,15 +356,21 @@ export class UserService {
     if (!user) {
       throw new ApiError(404, 404, "User not found");
     }
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    let tokenExist: SystemUser | null;
+    let token: string;
+
+    do {
+    token = crypto.randomBytes(32).toString('hex');
+    tokenExist = await SystemUser.findOne({ where: { resetPasswordToken: token } });
+    } while (tokenExist); // Keep generating until we get a unique email
     const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
 
-    user.resetPasswordToken = resetToken;
+    user.resetPasswordToken = token;
     user.resetPasswordExpires = resetTokenExpiry.toString();
     await user.save();
 
     // Send email with reset link
-    const resetUrl = `https://disposableemailhub-development.up.railway.app/reset-password/${resetToken}`;
+    const resetUrl = `https://disposableemailhub-development.up.railway.app/reset-password/${token}`;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -391,6 +397,17 @@ export class UserService {
     const user= await SystemUser.findOne({where:{resetPasswordToken:token}})
     if(isEmpty(user)){
       throw new ApiError(401, 401, "Password reset token is invalid or has expired");
+    }
+    const now = Date.now();
+    const expiryTime = parseInt(user.resetPasswordExpires || '0');
+    
+    if (isNaN(expiryTime) || now > expiryTime) {
+      // Clear expired token
+      user.resetPasswordToken = "";
+      user.resetPasswordExpires = "";
+      await user.save();
+      
+      throw new ApiError(401, 401, "Password reset token has expired");
     }
     const hashedPassword = await bcrypt.hash(data.password!, 12);
     
