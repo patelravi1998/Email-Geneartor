@@ -364,8 +364,8 @@ export class UserService {
     await user.save();
 
     // Send email with reset link
-    const resetUrl = `http://yourfrontendurl.com/reset-password/${resetToken}`;
-    
+    const resetUrl = `https://disposableemailhub-development.up.railway.app/reset-password/${resetToken}`;
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {

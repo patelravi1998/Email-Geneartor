@@ -18,10 +18,10 @@ import {
     @Column({ type: 'varchar' })
     password!: string;
 
-    @Column({ type: 'varchar' ,nullable:true,default:true})
+    @Column({ type: 'varchar' ,nullable:true,default:null})
     resetPasswordToken!: string;
 
-    @Column({ type: 'varchar' ,nullable:true,default:true})
+    @Column({ type: 'varchar' ,nullable:true,default:null})
     resetPasswordExpires!: string;
   
     @Column({ type: 'tinyint', default: 1 })
