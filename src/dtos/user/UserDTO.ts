@@ -86,6 +86,16 @@ export class  mailDTO {
   mail?: string;
 }
 
+export class  forgetDTO {
+  email?: string;
+}
+
+export class  resetDTO {
+  password?: string;
+}
+
+
+
 export class  signupDTO {
   email?: string;
   password?: string;

@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
@@ -256,6 +256,41 @@ export class UserController {
       next(error);
     }
   }
+
+  async forgetPassword(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = forgetSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const mail: forgetDTO = data;
+      const response = await UserService.forgetUserPassword(mail);
+      res.sendSuccess(200,"Password reset link sent to your email",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = resetSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const { token } = req.params;
+      if (!token) {
+        throw new ApiError(400, 400, "Missing Token");
+      }
+
+      const result: resetDTO = data;
+      const response = await UserService.resetUserPassword(token,result)
+      res.sendSuccess(200,"Password has been reset successfully",response);
+
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
   
 }

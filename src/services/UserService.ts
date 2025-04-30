@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO
 } from "../dtos/user/UserDTO";
 import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -22,6 +22,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import moment from 'moment'
 import { getRepository } from 'typeorm';
+import nodemailer from 'nodemailer'
+
 
 
 
@@ -348,6 +350,57 @@ export class UserService {
     }
     return false
   }
+
+  async forgetUserPassword(data: forgetDTO): Promise<any> {
+    const user = await SystemUser.findOne({ where:{email:data.email} });
+    if (!user) {
+      throw new ApiError(404, 404, "User not found");
+    }
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpiry.toString();
+    await user.save();
+
+    // Send email with reset link
+    const resetUrl = `http://yourfrontendurl.com/reset-password/${resetToken}`;
+    
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      to: user.email,
+      from: process.env.EMAIL_USERNAME,
+      subject: 'Password Reset',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+        Please click on the following link, or paste this into your browser to complete the process:\n\n
+        ${resetUrl}\n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  }
+
+  async resetUserPassword(token:string,data: resetDTO): Promise<any> {
+    const user= await SystemUser.findOne({where:{resetPasswordToken:token}})
+    if(isEmpty(user)){
+      throw new ApiError(401, 401, "Password reset token is invalid or has expired");
+    }
+    const hashedPassword = await bcrypt.hash(data.password!, 12);
+    
+    user.password = hashedPassword;
+    user.resetPasswordToken = "";
+    user.resetPasswordExpires = "";
+    await user.save();
+  }
+  
+  
 
 }
 

@@ -28,5 +28,9 @@ router.post('/login', UserController.userLogin);
 router.get('/user_purchased_mails',[authMiddleware], UserController.getUserMails); 
 router.post('/user_info', UserController.saveUserSupportQuery);  
 router.get('/payment_status',[authMiddleware], UserController.getPaymentStatus); 
+router.post('/forgot-password', UserController.forgetPassword);  
+router.post('/reset-password/:token', UserController.resetPassword);  
+
+
 
 export default router;

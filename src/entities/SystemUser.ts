@@ -17,6 +17,12 @@ import {
 
     @Column({ type: 'varchar' })
     password!: string;
+
+    @Column({ type: 'varchar' ,nullable:true,default:true})
+    resetPasswordToken!: string;
+
+    @Column({ type: 'varchar' ,nullable:true,default:true})
+    resetPasswordExpires!: string;
   
     @Column({ type: 'tinyint', default: 1 })
     status?: number;
