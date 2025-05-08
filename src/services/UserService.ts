@@ -69,7 +69,7 @@ export class UserService {
     emailData.generated_email = email;
     emailData.ipaddress = ipAddressData.ipadress!;
     const today = new Date();
-    const expirationDate = new Date(today.getTime() + 7 * 86400000); // 7 days later
+    const expirationDate = new Date(today.getTime() + 3 * 86400000); // 3 days later
     emailData.expiration_date = expirationDate.toISOString().split('T')[0]; 
     await emailData.save();
   
