@@ -184,4 +184,8 @@ const forgetSchema = Joi.object({
 const resetSchema = Joi.object({
   password:Joi.string().required()
 });
-export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema}
+
+const clickSchema = Joi.object({
+  temp_mail:Joi.string().required()
+});
+export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema,clickSchema}

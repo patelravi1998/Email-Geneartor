@@ -30,6 +30,7 @@ router.post('/user_info', UserController.saveUserSupportQuery);
 router.get('/payment_status',[authMiddleware], UserController.getPaymentStatus); 
 router.post('/forgot-password', UserController.forgetPassword);  
 router.post('/reset-password/:token', UserController.resetPassword);  
+router.post('/click', UserController.userClick);
 
 
 

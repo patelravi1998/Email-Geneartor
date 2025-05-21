@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
@@ -285,6 +285,22 @@ export class UserController {
       const result: resetDTO = data;
       const response = await UserService.resetUserPassword(token,result)
       res.sendSuccess(200,"Password has been reset successfully",response);
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async userClick(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = clickSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+
+      const result: clickDTO = data;
+      const response = await UserService.userClickData(result)
+      res.sendSuccess(200,"user Clicked Saved successfully");
 
     } catch (error) {
       next(error);

@@ -94,6 +94,10 @@ export class  resetDTO {
   password?: string;
 }
 
+export class  clickDTO {
+  temp_mail?: string;
+}
+
 
 
 export class  signupDTO {

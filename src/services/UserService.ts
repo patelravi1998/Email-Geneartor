@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailOrders,EmailResponse, SystemUser,UserQuery } from "../entities";
+import { EmailGenerator,EmailOrders,EmailResponse, SystemUser,UserClick,UserQuery } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import { faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO
 } from "../dtos/user/UserDTO";
 import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -438,6 +438,15 @@ export class UserService {
     user.resetPasswordToken = "";
     user.resetPasswordExpires = "";
     await user.save();
+  }
+
+  async userClickData(data: clickDTO): Promise<any> {
+    const emailData= await EmailGenerator.findOne({where:{generated_email:data.temp_mail}})
+    const clickedData= new UserClick()
+    clickedData.temp_mail=data.temp_mail!
+    clickedData.ipaddress=emailData?.ipaddress ? emailData?.ipaddress :"" 
+    clickedData.expiration_date=emailData?.expiration_date ? emailData?.expiration_date :"" 
+    await clickedData.save()
   }
   
   
