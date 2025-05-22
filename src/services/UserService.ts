@@ -340,6 +340,7 @@ export class UserService {
     userQuery.name=data.name!
     userQuery.email=data.email!
     userQuery.message=data.message!
+    userQuery.mobile=data.mobile!
     await userQuery.save()
   }
 

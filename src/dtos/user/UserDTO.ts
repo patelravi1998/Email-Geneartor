@@ -108,6 +108,7 @@ export class  userQueryDTO {
   email?: string;
   name?: string;
   message?: string;
+  mobile?:string;
 }
 
 export class EmailDTO {

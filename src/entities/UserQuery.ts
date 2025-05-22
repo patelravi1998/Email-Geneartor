@@ -21,6 +21,9 @@ import {
     @Column({ type: 'text' })
     message!: string;
 
+    @Column({ type: 'varchar' })
+    mobile!: string;
+
     @Column({ type: 'tinyint', default: 1 })
     status?: number;
   

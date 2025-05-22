@@ -151,7 +151,8 @@ const deleteMailSchema = Joi.object({
 const userQuerySchema = Joi.object({
   email:Joi.string().required(),
   name:Joi.string().required(),
-  message:Joi.string().required()
+  message:Joi.string().required(),
+  mobile:Joi.string().required()
 });
 
 const ipadress = Joi.string().required()
