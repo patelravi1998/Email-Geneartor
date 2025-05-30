@@ -393,7 +393,7 @@ export class UserService {
 
     const mailOptions = {
       to: user.email,
-      from: `disposableemailhub ${process.env.EMAIL_USERNAME}`,
+      from: `tempemailbox.com ${process.env.EMAIL_USERNAME}`,
       subject: 'Password Reset Request',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
