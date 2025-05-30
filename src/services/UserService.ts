@@ -8,7 +8,7 @@ import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import PublicService from "../services/PublicService";
 import { isEmpty } from "lodash";
-import { faker } from '@faker-js/faker';
+import { el, faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
   changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO
@@ -448,6 +448,72 @@ export class UserService {
     clickedData.ipaddress=emailData?.ipaddress ? emailData?.ipaddress :"" 
     clickedData.expiration_date=emailData?.expiration_date ? emailData?.expiration_date :"" 
     await clickedData.save()
+  }
+  
+  async sendEmailSubscription(): Promise<any> {
+    const userClicks = await UserClick.find({});
+    if (userClicks.length>0) {
+      for(let res of userClicks){
+        console.log(`>>>>>akakak`)
+        const subscriptionUrl = `https://tempemailbox.com/login`;
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+        const mailOptions = {
+          to: res.temp_mail,
+          from: `tempemailbox.com ${process.env.EMAIL_USERNAME}`,
+          subject: 'Your Temporary Email is About to Expire – Renew Now!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">Your Temporary Email Will Expire Soon</h2>
+              <p>Your temporary email <strong>${res.temp_mail}</strong> is set to expire on <strong>${res.expiration_date}</strong>.</p>
+              <p>To keep using this email, please log in and extend your subscription.</p>
+        
+              <a href="${subscriptionUrl}" 
+                 style="background-color: #2563eb; color: white; padding: 10px 20px; 
+                        text-decoration: none; border-radius: 5px; display: inline-block;">
+                 Renew Subscription
+              </a>
+        
+              <h3 style="margin-top: 20px;">Why Go Premium?</h3>
+              <ul style="line-height: 1.6;">
+                <li><strong>Keep Your Email Alive:</strong> Don’t lose it after 7 days!</li>
+                <li><strong>Unlimited Access:</strong> Continue using the same inbox without reset.</li>
+                <li><strong>Full Inbox Access:</strong> See all mails, anytime.</li>
+                <li><strong>Just ₹10/week:</strong> One of the lowest prices on the internet!</li>
+              </ul>
+        
+              <p style="font-size: 0.8em; color: #6b7280; margin-top: 20px;">
+                This reminder is sent to ensure you don’t lose access to your important mails.
+              </p>
+            </div>
+          `,
+          text: `
+            Your temporary email (${res.temp_mail}) will expire on ${res.expiration_date}.
+            Please login and take a subscription to continue using your inbox.
+        
+            Why Go Premium?
+            - Keep Your Email Alive: Don’t lose it after 7 days!
+            - Unlimited Access: Continue using the same inbox without reset.
+            - Full Inbox Access: See all mails, anytime.
+            - Just ₹10/week: One of the lowest prices on the internet!
+        
+            Renew now: ${subscriptionUrl}
+          `
+        };
+        
+    
+    
+        await transporter.sendMail(mailOptions);
+      }
+    }else{
+      throw new ApiError(404, 404, "Users Clicks not found");
+    }
   }
   
   

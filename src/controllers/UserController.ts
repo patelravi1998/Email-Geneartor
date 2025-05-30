@@ -307,6 +307,15 @@ export class UserController {
     }
   }
   
+  async sendEmailForSubscription(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const response = await UserService.sendEmailSubscription();
+      res.sendSuccess(200,"Email For Subscription Has Been Sent To Usrs");
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
   
 }
