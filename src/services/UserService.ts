@@ -248,14 +248,11 @@ export class UserService {
   async getExpirationDateForMail(temporaryEmail: string): Promise<any> {
     let expiryDate=""
     const emailData= await EmailGenerator.findOneBy({generated_email:temporaryEmail})
-    if(isEmpty(emailData)){
-      throw new ApiError(500, 500, "Invalid Email");
-    }
-    const emailOrder= await EmailOrders.findOne({where:{email:temporaryEmail}})
-    if(!isEmpty(emailOrder)){
-      expiryDate=emailOrder.expiry_date
+    if(!isEmpty(emailData)){
+      return expiryDate
     }
     return expiryDate
+
   }
 
   async userRegistration(data: signupDTO): Promise<any> {
