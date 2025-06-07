@@ -573,7 +573,7 @@ export class UserService {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #10b981;">You've Been Referred!</h2>
           <p>Hey there 👋,</p>
-          <p><strong>${data.referal_to_email}</strong> has invited you to try <strong>tempemailbox.com</strong> – the easiest way to get a free, disposable email address.</p>
+          <p><strong>${data.referal_by_email}</strong> has invited you to try <strong>tempemailbox.com</strong> – the easiest way to get a free, disposable email address.</p>
           
           <p>As a referral bonus, you get <strong>extra days of premium access</strong> when you sign up using the link below:</p>
     
