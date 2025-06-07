@@ -538,6 +538,10 @@ export class UserService {
   }
 
   async referToFriend(data: referDTO): Promise<any> {
+   const referalByEmail = await EmailGenerator.findOne({ where: { generated_email: data.referal_by_email } });
+   if(!referalByEmail){
+    throw new ApiError(401, 401, "The Email Which You Want To Exceed Is Invalid");
+   }
     const isUserAlreadyRefered= await Referal.find({where:{referal_to_email:data.referal_to_email}})
     if(isUserAlreadyRefered.length>0){
       throw new ApiError(401, 401, "This User Is Already Refered");
