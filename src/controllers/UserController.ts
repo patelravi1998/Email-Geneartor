@@ -6,6 +6,8 @@ import { ApiError } from "../middleware/errors";
 import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO} from '../dtos/user/UserDTO';
 import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema,referSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
+const requestReferalCache = new Set<string>();
+
 
 interface Attachment {
   filename: string;
@@ -322,11 +324,20 @@ export class UserController {
       if (error) {
         throw new ApiError(400, 400, error.details[0].message, error);
       }
+      let hasCode= await requestReferalCache.has(data.referal_by_email)
+      if (hasCode) {
+        throw new ApiError(400,400, "Request is already in progress");
+      }
+     await  requestReferalCache.add(data.referal_by_email);
 
       const result: referDTO = data;
       const response = await UserService.referToFriend(result)
+      await requestReferalCache.delete(data.referal_by_email)
+
       res.sendSuccess(200,"Refer Link Has Been successfully Sent To User's Mail");
     } catch (error) {
+      await requestReferalCache.delete(req.body.referal_by_email)
+
       next(error);
     }
   }
