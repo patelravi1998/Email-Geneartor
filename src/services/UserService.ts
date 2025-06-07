@@ -249,7 +249,7 @@ export class UserService {
     let expiryDate=""
     const emailData= await EmailGenerator.findOneBy({generated_email:temporaryEmail})
     if(!isEmpty(emailData)){
-      return expiryDate
+      return expiryDate=emailData.expiration_date!
     }
     return expiryDate
 
