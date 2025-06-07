@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailOrders,EmailResponse, SystemUser,UserClick,UserQuery } from "../entities";
+import { EmailGenerator,EmailOrders,EmailResponse, Referal, SystemUser,UserClick,UserQuery } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -8,10 +8,10 @@ import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import PublicService from "../services/PublicService";
 import { isEmpty } from "lodash";
-import { el, faker } from '@faker-js/faker';
+import { da, el, faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO
 } from "../dtos/user/UserDTO";
 import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -259,16 +259,37 @@ export class UserService {
   }
 
   async userRegistration(data: signupDTO): Promise<any> {
-    const isUserExist= await SystemUser.findOne({where:{email:data.email}})
-    if(!isEmpty(isUserExist)){
-      throw new ApiError(500, 500, "Email already exists. Please log in.");
+    const disallowedDomain = 'tempemailbox.com';
+    const emailDomain = data.email?.split('@')[1];
+  
+    if (emailDomain === disallowedDomain) {
+      throw new ApiError(400, 400, `Email addresses from ${disallowedDomain} are not allowed.`);
     }
+  
+    const isUserExist = await SystemUser.findOne({ where: { email: data.email } });
+    if (!isEmpty(isUserExist)) {
+      throw new ApiError(500, 500, 'Email already exists. Please log in.');
+    }
+  
     const hashedPassword = await bcrypt.hash(data.password!, 10);
-    const user = new SystemUser()
-    user.email=data.email!
-    user.password=hashedPassword
-    await user.save()
+    const user = new SystemUser();
+    user.email = data.email!;
+    user.password = hashedPassword;
+    await user.save();
+    const referalData=await Referal.findOne({where:{referal_to_email:data.email,is_referal_given:0}})
+    if(referalData){
+      const existingMail = await EmailGenerator.findOne({ where: { generated_email: referalData.referal_by_email } });
+      if (existingMail?.expiration_date) {
+        const currentExpiration = new Date(existingMail.expiration_date); // convert string to Date
+        const newExpiration = new Date(currentExpiration.getTime() + 7 * 86400000); // add 7 days
+        existingMail.expiration_date = newExpiration.toISOString().split('T')[0]; // format as YYYY-MM-DD
+        await existingMail.save();
+        referalData.is_referal_given=1
+        await referalData.save()
+      }
+    }
   }
+  
 
   async userLoginProcess(data: signupDTO): Promise<any> {
     // Check if user exists
@@ -514,6 +535,80 @@ export class UserService {
     }else{
       throw new ApiError(404, 404, "Users Clicks not found");
     }
+  }
+
+  async referToFriend(data: referDTO): Promise<any> {
+    const isUserAlreadyRefered= await Referal.find({where:{referal_to_email:data.referal_to_email}})
+    if(isUserAlreadyRefered.length>0){
+      throw new ApiError(401, 401, "This User Is Already Refered");
+    }
+    const disallowedDomain = 'tempemailbox.com';
+    const emailDomain = data.referal_to_email?.split('@')[1];
+  
+    if (emailDomain === disallowedDomain) {
+      throw new ApiError(400, 400, `Email addresses from ${disallowedDomain} are not allowed.`);
+    }
+    const referalData= new Referal()
+    referalData.referal_by_email=data.referal_by_email!
+    referalData.referal_to_email=data.referal_to_email!
+    await referalData.save()
+    const webUrl = `https://tempemailbox.com/signup`;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+    const mailOptions = {
+      to: data.referal_to_email, // Email of the referred user
+      from: `tempemailbox.com ${process.env.EMAIL_USERNAME}`,
+      subject: 'You’ve Been Invited to Try tempemailbox.com – Claim Your Free Access!',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #10b981;">You've Been Referred!</h2>
+          <p>Hey there 👋,</p>
+          <p><strong>${data.referal_to_email}</strong> has invited you to try <strong>tempemailbox.com</strong> – the easiest way to get a free, disposable email address.</p>
+          
+          <p>As a referral bonus, you get <strong>extra days of premium access</strong> when you sign up using the link below:</p>
+    
+          <div style="background: #f3f4f6; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <strong>Your Referral Link:</strong><br/>
+            <a href="${webUrl}" style="color: #2563eb;">${webUrl}</a>
+          </div>
+    
+          <p>✅ No signup required<br/>
+             ✅ Instant email access<br/>
+             ✅ Bonus rewards when you refer others too!</p>
+    
+          <p>Start using your temporary email now and enjoy a smoother, spam-free experience.</p>
+    
+          <p style="font-size: 0.85em; color: #6b7280; margin-top: 20px;">
+            This referral is valid for a limited time. Don’t miss out!
+          </p>
+        </div>
+      `,
+      text: `
+        You've Been Referred to tempemailbox.com!
+    
+        Hey there,
+    
+        ${data.referal_to_email} has invited you to try tempemailbox.com – a quick, no-hassle way to get temporary email addresses.
+    
+        Use this link to claim your free access:
+        ${webUrl}
+    
+        ✅ No signup required
+        ✅ Instant email access
+        ✅ Bonus rewards when you refer others too!
+    
+        This referral is valid for a limited time. Start now and enjoy spam-free inboxing!
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    
   }
   
   

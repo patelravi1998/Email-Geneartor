@@ -98,6 +98,10 @@ export class  clickDTO {
   temp_mail?: string;
 }
 
+export class  referDTO {
+  referal_to_email?: string;
+  referal_by_email?: string;
+}
 
 
 export class  signupDTO {

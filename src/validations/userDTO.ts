@@ -189,4 +189,9 @@ const resetSchema = Joi.object({
 const clickSchema = Joi.object({
   temp_mail:Joi.string().required()
 });
-export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema,clickSchema}
+
+const referSchema = Joi.object({
+  referal_to_email:Joi.string().required(),
+  referal_by_email:Joi.string().required()
+});
+export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema,clickSchema,referSchema}

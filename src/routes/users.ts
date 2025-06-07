@@ -32,7 +32,7 @@ router.post('/forgot-password', UserController.forgetPassword);
 router.post('/reset-password/:token', UserController.resetPassword);  
 router.post('/click', UserController.userClick);
 router.post('/bulk_mail', UserController.sendEmailForSubscription);
-
+router.post('/referal', UserController.referFriend);
 
 
 

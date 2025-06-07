@@ -3,8 +3,8 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema,referSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 
 interface Attachment {
@@ -315,6 +315,22 @@ export class UserController {
       next(error);
     }
   }
+
+  async referFriend(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = referSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+
+      const result: referDTO = data;
+      const response = await UserService.referToFriend(result)
+      res.sendSuccess(200,"Refer Link Has Been successfully Sent To User's Mail");
+    } catch (error) {
+      next(error);
+    }
+  }
+  
   
   
   
