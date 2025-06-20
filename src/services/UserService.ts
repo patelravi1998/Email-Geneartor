@@ -49,7 +49,7 @@ interface ReceivedEmailData {
 
 export class UserService {
   async generateEmailAddress(ipAddressData: ipAddressDTO): Promise<string> {
-    const domains = ["tempemailbox.com"]; // List of domains
+    const domains = ["tempemailbox.com",'anonemail.space']; // List of domains
     let email: string;
     let emailExists: EmailGenerator | null;
   
