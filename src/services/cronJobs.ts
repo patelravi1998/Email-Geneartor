@@ -6,7 +6,9 @@ import UserService from "../services/UserService";
 
 cron.schedule('0 9 * * *', async () => {
     console.log('⏰ Running daily subscription email job at 09:00 AM IST');
-    await UserService.sendEmailSubscription();
+    if(process.env.NODE_ENV==="PRODUCTION"){
+        await UserService.sendEmailSubscription();
+    }
   }, {
     timezone: 'Asia/Kolkata'
 });
