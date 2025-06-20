@@ -9,6 +9,8 @@ import { setSecurityHeaders, handleCors, rateLimiter } from './src/middleware/se
 import routes from './src/routes';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import './src/services/cronJobs'; // <- This will run your cron when server starts
+
 
 dotenv.config();
 
