@@ -609,6 +609,8 @@ export class UserService {
     if(isEmpty(leadStatusData)){
       throw new ApiError(400, 400, "This Number Is Not Present In Our System");
     }
+    let exp=0
+    exp=Number(data.experience) ?  Number(data.experience) : exp
     const lead= new Leads()
     lead.age=data.age!
     lead.call_status=data.call_status
@@ -616,7 +618,7 @@ export class UserService {
     lead.state=data.state!
     lead.education=data.education!
     lead.dob=data.dob
-    lead.experience=BigInt(data.experience!)
+    lead.experience=BigInt(exp)
     lead.job_type=data.job_type!
     lead.past_job=data.past_job!
     lead.is_whatsapp_number_same=data.is_whatsapp_number_same

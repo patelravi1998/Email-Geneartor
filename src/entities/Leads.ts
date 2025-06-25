@@ -24,8 +24,8 @@ import {
     @Column({ type: 'varchar',nullable:true,default:null })
     name!: string;
 
-    @Column({ type: 'date', nullable: true,default:null })
-    dob?: string;
+    @Column({ type: 'varchar', nullable: true, default: null })
+    dob?: string ;
 
     @Column({ type: 'varchar',nullable:true,default:null })
     age!: string;
