@@ -598,6 +598,10 @@ export class UserService {
   }
 
   async createLeadStatus(data: leadStatusDTO): Promise<any> {
+    const leadStatusData= await LeadStatus.findOne({where:{mobile:data.mobile}})
+    if(!isEmpty(leadStatusData)){
+      throw new ApiError(400, 400, "This Number Is Already Present In Our System");
+    }
     const leadStatus= new LeadStatus()
     leadStatus.mobile=data.mobile!
     leadStatus.called_date=data.called_date
