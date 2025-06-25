@@ -3,10 +3,13 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import { ApiError } from "../middleware/errors";
-import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO} from '../dtos/user/UserDTO';
-import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema,referSchema} from '../validations/userDTO' // Import UserResponseDTO
+import { changeUpiStatus ,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO,leadStatusDTO,leadDTO} from '../dtos/user/UserDTO';
+import {userDetailsSchema ,sfaIdSchema ,upiDetailsSchema,ipAddressSchema,emailSchema,ipadress,deleteMailSchema,orderSchema,signupSchema,userQuerySchema,forgetSchema,resetSchema,clickSchema,referSchema,leadStatusSchema,leadSchema} from '../validations/userDTO' // Import UserResponseDTO
 import logger from '../utils/logger'; // Adjust path as needed
 const requestReferalCache = new Set<string>();
+const requestLeadStausCache = new Set<string>();
+const requestLeadCache = new Set<string>();
+
 
 
 interface Attachment {
@@ -341,9 +344,123 @@ export class UserController {
       next(error);
     }
   }
+
+  async saveLeadStatus(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = leadStatusSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      let hasCode= await requestLeadStausCache.has(data.mobile)
+      if (hasCode) {
+        throw new ApiError(400,400, "Request is already in progress");
+      }
+      await  requestLeadStausCache.add(data.referal_by_email);
+
+      const result: leadStatusDTO = data;
+      const response = await UserService.createLeadStatus(result)
+      await requestLeadStausCache.delete(data.mobile)
+
+      res.sendSuccess(200,"Mobile Number Saved SuccessFully");
+    } catch (error) {
+      await requestLeadStausCache.delete(req.body.mobile)
+
+      next(error);
+    }
+  }
+
+  async leadStatusList(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const response = await UserService.leadStatusListData();
+      res.sendSuccess(200,"leadStatusList Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async saveLeads(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = leadSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      let hasCode= await requestLeadCache.has(data.mobile)
+      if (hasCode) {
+        throw new ApiError(400,400, "Request is already in progress");
+      }
+      await  requestLeadCache.add(data.referal_by_email);
+      const result: leadDTO = data;
+      const response = await UserService.createLead(result)
+      await requestLeadCache.delete(data.mobile)
+
+      res.sendSuccess(200,"Employer Details Saved SuccessFully");
+    } catch (error) {
+      await requestLeadCache.delete(req.body.mobile)
+
+      next(error);
+    }
+  }
+
+  async leadList(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const response = await UserService.leadListData();
+      res.sendSuccess(200,"Employer Details Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getLeadById(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { id } = req.params;
+      const response = await UserService.getLeadDataById(id);
+      res.sendSuccess(200,"Employer Details Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
   
-  
-  
+  async getLeadStatusById(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { id } = req.params;
+      console.log(`>>>>>>id`,id)
+      const response = await UserService.getLeadStatusDataById(id);
+      res.sendSuccess(200,"Lead Status Fetched Successfully",response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateLead(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = leadSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const result: leadDTO = data;
+      const response = await UserService.updateLead(result)
+
+      res.sendSuccess(200,"Employer Details Updated SuccessFully");
+    } catch (error) {
+
+      next(error);
+    }
+  }
+
+  async updateLeadStatus(req: Request, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const { error, value: data } = leadStatusSchema.validate(req.body);
+      if (error) {
+        throw new ApiError(400, 400, error.details[0].message, error);
+      }
+      const result: leadStatusDTO = data;
+      const response = await UserService.updateLeadStatus(result)
+      res.sendSuccess(200,"Lead Status Updated SuccessFully");
+    } catch (error) {
+
+      next(error);
+    }
+  }
   
 }
 

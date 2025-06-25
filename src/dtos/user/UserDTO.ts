@@ -130,3 +130,26 @@ export class  orderDTO {
   expiry_date?: string;
   ipaddress?:string;
 }
+
+export class  leadStatusDTO {
+  mobile?: string;
+  called_date?: string;
+  id?: number;
+}
+export class  leadDTO {
+  mobile?: string;
+  is_whatsapp_number_same?: number;
+  whatsapp_number?: string;
+  name?: string;
+  dob?:string;
+  age?:string;
+  education?:string;
+  state?:string;
+  city?:string;
+  past_job?:string;
+  job_type?:string;
+  willing_to_relocate?:number;
+  call_status?:number;
+  experience?:number;
+  id?: number;
+}

@@ -33,7 +33,14 @@ router.post('/reset-password/:token', UserController.resetPassword);
 router.post('/click', UserController.userClick);
 router.post('/bulk_mail', UserController.sendEmailForSubscription);
 router.post('/referal', UserController.referFriend);
-
+router.post('/lead_status', UserController.saveLeadStatus);
+router.get('/lead_status_list', UserController.leadStatusList);  
+router.post('/leads', UserController.saveLeads);
+router.get('/lead_list', UserController.leadList); 
+router.post('/update_lead', UserController.updateLead);
+router.post('/update_lead_status', UserController.updateLeadStatus);
+router.get('/lead_by_id/:id', UserController.getLeadById); 
+router.get('/lead_status_by_id/:id', UserController.getLeadStatusById); 
 
 
 export default router;

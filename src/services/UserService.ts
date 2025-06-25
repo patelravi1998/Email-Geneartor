@@ -1,6 +1,6 @@
 // src/services/UserService.ts
 
-import { EmailGenerator,EmailOrders,EmailResponse, Referal, SystemUser,UserClick,UserQuery } from "../entities";
+import { EmailGenerator,EmailOrders,EmailResponse, Leads, LeadStatus, Referal, SystemUser,UserClick,UserQuery } from "../entities";
 import { ApiError } from "../middleware/errors";
 import axios from "axios";
 import fs from "fs";
@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import { da, el, faker } from '@faker-js/faker';
 import {
   UpdateUserDetailsDTO,
-  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO
+  changeUpiStatus,ipAddressDTO,EmailDTO,mailDTO,orderDTO,signupDTO,userQueryDTO,forgetDTO,resetDTO,clickDTO,referDTO,leadStatusDTO,leadDTO
 } from "../dtos/user/UserDTO";
 import { getManager ,LessThanOrEqual, MoreThan, MoreThanOrEqual} from 'typeorm';
 import { mySQl_dataSource } from '../config/database'; // Ensure you have this or replace with your DataSource setup
@@ -596,6 +596,101 @@ export class UserService {
     await transporter.sendMail(mailOptions);
     
   }
+
+  async createLeadStatus(data: leadStatusDTO): Promise<any> {
+    const leadStatus= new LeadStatus()
+    leadStatus.mobile=data.mobile!
+    leadStatus.called_date=data.called_date
+    await leadStatus.save()
+  }
+
+  async createLead(data: leadDTO): Promise<any> {
+    const leadStatusData= await LeadStatus.findOne({where:{mobile:data.mobile}})
+    if(isEmpty(leadStatusData)){
+      throw new ApiError(400, 400, "This Number Is Not Present In Our System");
+    }
+    const lead= new Leads()
+    lead.age=data.age!
+    lead.call_status=data.call_status
+    lead.city=data.city!
+    lead.state=data.state!
+    lead.education=data.education!
+    lead.dob=data.dob
+    lead.experience=BigInt(data.experience!)
+    lead.job_type=data.job_type!
+    lead.past_job=data.past_job!
+    lead.is_whatsapp_number_same=data.is_whatsapp_number_same
+    lead.whatsapp_number=data.whatsapp_number!
+    lead.name=data.name!
+    lead.mobile=data.mobile!
+    await lead.save()
+    if(lead){
+      if(data.call_status===1){
+        leadStatusData.status=0
+        await leadStatusData.save()
+      }
+    }
+
+  }
+  async leadStatusListData(): Promise<any> {
+    const leadStatusData= await LeadStatus.find({where:{status:1}})
+    return leadStatusData
+  }
+
+  async leadListData(): Promise<any> {
+    const leadStatusData= await Leads.find({})
+    return leadStatusData
+  }
+
+  async getLeadDataById(id:any): Promise<any> {
+    const leadStatusData= await Leads.findOne({where:{id:id}})
+    return leadStatusData
+  }
+
+  async getLeadStatusDataById(id:any): Promise<any> {
+    const leadStatusData= await LeadStatus.findOne({where:{id:id}})
+    return leadStatusData
+  }
+
+  async updateLeadStatus(data: leadStatusDTO): Promise<any> {
+    const leadStatusData= await LeadStatus.findOne({where:{id:data.id}})
+    if(isEmpty(leadStatusData)){
+      throw new ApiError(400, 400, "Invalid Lead Status Id");
+    }
+    leadStatusData.mobile=data.mobile!
+    leadStatusData.called_date=data.called_date
+    await leadStatusData.save()
+  }
+
+  async updateLead(data: leadDTO): Promise<any> {
+    const leadData= await Leads.findOne({where:{id:data.id}})
+    if(isEmpty(leadData)){
+      throw new ApiError(400, 400, "Invalid Lead  Id");
+    }
+    leadData.age=data.age!
+    leadData.call_status=data.call_status
+    leadData.city=data.city!
+    leadData.state=data.state!
+    leadData.education=data.education!
+    leadData.dob=data.dob
+    leadData.experience=BigInt(data.experience!)
+    leadData.job_type=data.job_type!
+    leadData.past_job=data.past_job!
+    leadData.is_whatsapp_number_same=data.is_whatsapp_number_same
+    leadData.whatsapp_number=data.whatsapp_number!
+    leadData.name=data.name!
+    leadData.mobile=data.mobile!
+    await leadData.save()
+    const leadStatusData= await LeadStatus.findOne({where:{mobile:leadData.mobile}})
+
+    if(data.call_status===1){
+      leadStatusData!.status=0
+      await leadStatusData!.save()
+    }
+
+  }
+
+  
   
   
 

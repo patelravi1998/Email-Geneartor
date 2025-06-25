@@ -194,4 +194,27 @@ const referSchema = Joi.object({
   referal_to_email:Joi.string().required(),
   referal_by_email:Joi.string().required()
 });
-export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema,clickSchema,referSchema}
+
+const leadStatusSchema = Joi.object({
+  mobile:Joi.string().required(),
+  called_date:Joi.string().required(),
+  id:Joi.number().optional()
+});
+const leadSchema = Joi.object({
+  mobile:Joi.string().required(),
+  is_whatsapp_number_same:Joi.number().optional(),
+  whatsapp_number:Joi.string().optional(),
+  name:Joi.string().optional(),
+  dob:Joi.string().optional(),
+  age:Joi.string().optional(),
+  education:Joi.string().optional(),
+  state:Joi.string().optional(),
+  city:Joi.string().optional(),
+  past_job:Joi.string().optional(),
+  job_type:Joi.string().optional(),
+  willing_to_relocate:Joi.number().optional(),
+  call_status:Joi.number().required(),
+  experience:Joi.number().optional(),
+  id:Joi.number().optional()
+});
+export { ipAddressSchema,signupSchema,userQuerySchema,ipadress,deleteMailSchema,emailSchema,loginUserSchema, verifyUserSchema, registorRetailerSchema,profileRetailerSchema,registorGameSchema,gameUniqueCodeVerificationSchema ,userDetailsSchema,dataSchema, consentSchema,gameAttemptSchema,sfaIdSchema,cdrSchema,upiDetailsSchema,quizSchema,orderSchema,forgetSchema,resetSchema,clickSchema,referSchema,leadStatusSchema,leadSchema}
