@@ -639,8 +639,11 @@ export class UserService {
 
   }
   async leadStatusListData(): Promise<any> {
-    const leadStatusData= await LeadStatus.find({where:{status:1}})
-    return leadStatusData
+    const leadStatusData = await LeadStatus.find({
+      where: { status: 1 },
+      order: { created_at: 'DESC' } // or 'created_at' depending on your column name
+    });
+    return leadStatusData;
   }
 
   async leadListData(): Promise<any> {
