@@ -609,10 +609,10 @@ export class UserService {
   }
 
   async createLead(data: leadDTO): Promise<any> {
-    const leadStatusData= await LeadStatus.findOne({where:{mobile:data.mobile}})
-    if(isEmpty(leadStatusData)){
-      throw new ApiError(400, 400, "This Number Is Not Present In Our System");
-    }
+    // const leadStatusData= await LeadStatus.findOne({where:{mobile:data.mobile}})
+    // if(isEmpty(leadStatusData)){
+    //   throw new ApiError(400, 400, "This Number Is Not Present In Our System");
+    // }
     let exp=0
     exp=Number(data.experience) ?  Number(data.experience) : exp
     const lead= new Leads()
@@ -630,12 +630,12 @@ export class UserService {
     lead.name=data.name!
     lead.mobile=data.mobile!
     await lead.save()
-    if(lead){
-      if(data.call_status===1){
-        leadStatusData.status=0
-        await leadStatusData.save()
-      }
-    }
+    // if(lead){
+    //   if(data.call_status===1){
+    //     leadStatusData.status=0
+    //     await leadStatusData.save()
+    //   }
+    // }
 
   }
   async leadStatusListData(): Promise<any> {
@@ -647,8 +647,10 @@ export class UserService {
   }
 
   async leadListData(): Promise<any> {
-    const leadStatusData= await Leads.find({})
-    return leadStatusData
+    const leadStatusData = await Leads.find({
+      order: { created_at: 'DESC' }
+    });
+    return leadStatusData;
   }
 
   async getLeadDataById(id:any): Promise<any> {
